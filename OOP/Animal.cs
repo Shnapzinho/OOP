@@ -9,8 +9,8 @@ namespace OOP
 	public abstract class Animal
 	{
 		public string ImagePath { get; set; }
-		public string Type { get; protected set; }
-		public string Species { get; protected set; }
+		public string Type { get; set; }
+		public string Species { get; set; }
 
 		public Animal(string imagePath)
 		{
