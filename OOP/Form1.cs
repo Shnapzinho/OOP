@@ -17,6 +17,8 @@ namespace OOP
 			animalList.AddAnimal(new Tiger("tiger.png"));
 			animalList.AddAnimal(new Eagle("eagle.png"));
 			animalList.AddAnimal(new Pike("pike.png"));
+			animalList.AddAnimal(new Dog("dog.png"));
+			animalList.AddAnimal(new Carp("carp.png"));
 		}
 
 		private void LoadImagesToPictureBoxes()
@@ -24,6 +26,8 @@ namespace OOP
 			pictureBoxTiger.Image = Image.FromFile(animalList.GetAnimals()[0].ImagePath);
 			pictureBoxEagle.Image = Image.FromFile(animalList.GetAnimals()[1].ImagePath);
 			pictureBoxPike.Image = Image.FromFile(animalList.GetAnimals()[2].ImagePath);
+			pictureBoxDog.Image = Image.FromFile(animalList.GetAnimals()[3].ImagePath);
+			pictureBoxCarp.Image = Image.FromFile(animalList.GetAnimals()[4].ImagePath);
 		}
 
 		private void Button1_Click(object sender, EventArgs e)

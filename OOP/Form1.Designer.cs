@@ -38,14 +38,18 @@ namespace OOP
 			pictureBoxTiger = new PictureBox();
 			pictureBoxEagle = new PictureBox();
 			pictureBoxPike = new PictureBox();
+			pictureBoxDog = new PictureBox();
+			pictureBoxCarp = new PictureBox();
 			((System.ComponentModel.ISupportInitialize)pictureBoxTiger).BeginInit();
 			((System.ComponentModel.ISupportInitialize)pictureBoxEagle).BeginInit();
 			((System.ComponentModel.ISupportInitialize)pictureBoxPike).BeginInit();
+			((System.ComponentModel.ISupportInitialize)pictureBoxDog).BeginInit();
+			((System.ComponentModel.ISupportInitialize)pictureBoxCarp).BeginInit();
 			SuspendLayout();
 			// 
 			// Button1
 			// 
-			Button1.Location = new Point(22, 126);
+			Button1.Location = new Point(22, 219);
 			Button1.Margin = new Padding(2);
 			Button1.Name = "Button1";
 			Button1.Size = new Size(99, 26);
@@ -61,7 +65,7 @@ namespace OOP
 			TextBox1.Multiline = true;
 			TextBox1.Name = "TextBox1";
 			TextBox1.ReadOnly = true;
-			TextBox1.Size = new Size(199, 254);
+			TextBox1.Size = new Size(201, 424);
 			TextBox1.TabIndex = 1;
 			// 
 			// pictureBoxTiger
@@ -94,11 +98,33 @@ namespace OOP
 			pictureBoxPike.TabIndex = 4;
 			pictureBoxPike.TabStop = false;
 			// 
+			// pictureBoxDog
+			// 
+			pictureBoxDog.Location = new Point(381, 271);
+			pictureBoxDog.Margin = new Padding(2);
+			pictureBoxDog.Name = "pictureBoxDog";
+			pictureBoxDog.Size = new Size(166, 82);
+			pictureBoxDog.SizeMode = PictureBoxSizeMode.StretchImage;
+			pictureBoxDog.TabIndex = 5;
+			pictureBoxDog.TabStop = false;
+			// 
+			// pictureBoxCarp
+			// 
+			pictureBoxCarp.Location = new Point(381, 357);
+			pictureBoxCarp.Margin = new Padding(2);
+			pictureBoxCarp.Name = "pictureBoxCarp";
+			pictureBoxCarp.Size = new Size(166, 82);
+			pictureBoxCarp.SizeMode = PictureBoxSizeMode.StretchImage;
+			pictureBoxCarp.TabIndex = 6;
+			pictureBoxCarp.TabStop = false;
+			// 
 			// Form1
 			// 
 			AutoScaleDimensions = new SizeF(7F, 15F);
 			AutoScaleMode = AutoScaleMode.Font;
-			ClientSize = new Size(559, 279);
+			ClientSize = new Size(580, 488);
+			Controls.Add(pictureBoxCarp);
+			Controls.Add(pictureBoxDog);
 			Controls.Add(pictureBoxPike);
 			Controls.Add(pictureBoxEagle);
 			Controls.Add(pictureBoxTiger);
@@ -110,6 +136,8 @@ namespace OOP
 			((System.ComponentModel.ISupportInitialize)pictureBoxTiger).EndInit();
 			((System.ComponentModel.ISupportInitialize)pictureBoxEagle).EndInit();
 			((System.ComponentModel.ISupportInitialize)pictureBoxPike).EndInit();
+			((System.ComponentModel.ISupportInitialize)pictureBoxDog).EndInit();
+			((System.ComponentModel.ISupportInitialize)pictureBoxCarp).EndInit();
 			ResumeLayout(false);
 			PerformLayout();
 		}
@@ -121,5 +149,7 @@ namespace OOP
 		private PictureBox pictureBoxTiger;
 		private PictureBox pictureBoxEagle;
 		private PictureBox pictureBoxPike;
+		private PictureBox pictureBoxDog;
+		private PictureBox pictureBoxCarp;
 	}
 }
