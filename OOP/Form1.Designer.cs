@@ -33,123 +33,145 @@ namespace OOP
 		/// </summary>
 		private void InitializeComponent()
 		{
-			Button1 = new Button();
-			TextBox1 = new TextBox();
-			pictureBoxTiger = new PictureBox();
-			pictureBoxEagle = new PictureBox();
-			pictureBoxPike = new PictureBox();
-			pictureBoxDog = new PictureBox();
-			pictureBoxCarp = new PictureBox();
-			((System.ComponentModel.ISupportInitialize)pictureBoxTiger).BeginInit();
-			((System.ComponentModel.ISupportInitialize)pictureBoxEagle).BeginInit();
-			((System.ComponentModel.ISupportInitialize)pictureBoxPike).BeginInit();
-			((System.ComponentModel.ISupportInitialize)pictureBoxDog).BeginInit();
-			((System.ComponentModel.ISupportInitialize)pictureBoxCarp).BeginInit();
+			buttonCreate = new Button();
+			textBoxName = new TextBox();
+			pictureBoxAnimal = new PictureBox();
+			comboBoxAnimalType = new ComboBox();
+			labelAnimalInfo = new Label();
+			labelAnimalCount = new Label();
+			textBoxBreed = new TextBox();
+			textBoxDepth = new TextBox();
+			textBoxAnimalsInfo = new TextBox();
+			textBoxSpeed = new TextBox();
+			((System.ComponentModel.ISupportInitialize)pictureBoxAnimal).BeginInit();
 			SuspendLayout();
 			// 
-			// Button1
+			// buttonCreate
 			// 
-			Button1.Location = new Point(22, 219);
-			Button1.Margin = new Padding(2);
-			Button1.Name = "Button1";
-			Button1.Size = new Size(99, 26);
-			Button1.TabIndex = 0;
-			Button1.Text = "Watch";
-			Button1.UseVisualStyleBackColor = true;
-			Button1.Click += Button1_Click;
+			buttonCreate.Location = new Point(281, 14);
+			buttonCreate.Margin = new Padding(2);
+			buttonCreate.Name = "buttonCreate";
+			buttonCreate.Size = new Size(99, 23);
+			buttonCreate.TabIndex = 0;
+			buttonCreate.Text = "Create";
+			buttonCreate.UseVisualStyleBackColor = true;
+			buttonCreate.Click += buttonCreate_Click;
 			// 
-			// TextBox1
+			// textBoxName
 			// 
-			TextBox1.Location = new Point(142, 15);
-			TextBox1.Margin = new Padding(2);
-			TextBox1.Multiline = true;
-			TextBox1.Name = "TextBox1";
-			TextBox1.ReadOnly = true;
-			TextBox1.Size = new Size(201, 424);
-			TextBox1.TabIndex = 1;
+			textBoxName.Location = new Point(11, 69);
+			textBoxName.Margin = new Padding(2);
+			textBoxName.Name = "textBoxName";
+			textBoxName.PlaceholderText = "Enter name";
+			textBoxName.Size = new Size(172, 23);
+			textBoxName.TabIndex = 1;
 			// 
-			// pictureBoxTiger
+			// pictureBoxAnimal
 			// 
-			pictureBoxTiger.Location = new Point(381, 15);
-			pictureBoxTiger.Margin = new Padding(2);
-			pictureBoxTiger.Name = "pictureBoxTiger";
-			pictureBoxTiger.Size = new Size(166, 78);
-			pictureBoxTiger.SizeMode = PictureBoxSizeMode.StretchImage;
-			pictureBoxTiger.TabIndex = 2;
-			pictureBoxTiger.TabStop = false;
+			pictureBoxAnimal.Location = new Point(247, 140);
+			pictureBoxAnimal.Margin = new Padding(2);
+			pictureBoxAnimal.Name = "pictureBoxAnimal";
+			pictureBoxAnimal.Size = new Size(182, 137);
+			pictureBoxAnimal.SizeMode = PictureBoxSizeMode.StretchImage;
+			pictureBoxAnimal.TabIndex = 2;
+			pictureBoxAnimal.TabStop = false;
 			// 
-			// pictureBoxEagle
+			// comboBoxAnimalType
 			// 
-			pictureBoxEagle.Location = new Point(381, 97);
-			pictureBoxEagle.Margin = new Padding(2);
-			pictureBoxEagle.Name = "pictureBoxEagle";
-			pictureBoxEagle.Size = new Size(166, 84);
-			pictureBoxEagle.SizeMode = PictureBoxSizeMode.StretchImage;
-			pictureBoxEagle.TabIndex = 3;
-			pictureBoxEagle.TabStop = false;
+			comboBoxAnimalType.FormattingEnabled = true;
+			comboBoxAnimalType.Location = new Point(11, 14);
+			comboBoxAnimalType.Name = "comboBoxAnimalType";
+			comboBoxAnimalType.Size = new Size(172, 23);
+			comboBoxAnimalType.TabIndex = 7;
+			comboBoxAnimalType.SelectedIndexChanged += comboBoxAnimalType_SelectedIndexChanged;
 			// 
-			// pictureBoxPike
+			// labelAnimalInfo
 			// 
-			pictureBoxPike.Location = new Point(381, 185);
-			pictureBoxPike.Margin = new Padding(2);
-			pictureBoxPike.Name = "pictureBoxPike";
-			pictureBoxPike.Size = new Size(166, 82);
-			pictureBoxPike.SizeMode = PictureBoxSizeMode.StretchImage;
-			pictureBoxPike.TabIndex = 4;
-			pictureBoxPike.TabStop = false;
+			labelAnimalInfo.AutoSize = true;
+			labelAnimalInfo.Location = new Point(200, 46);
+			labelAnimalInfo.Name = "labelAnimalInfo";
+			labelAnimalInfo.Size = new Size(0, 15);
+			labelAnimalInfo.TabIndex = 8;
 			// 
-			// pictureBoxDog
+			// labelAnimalCount
 			// 
-			pictureBoxDog.Location = new Point(381, 271);
-			pictureBoxDog.Margin = new Padding(2);
-			pictureBoxDog.Name = "pictureBoxDog";
-			pictureBoxDog.Size = new Size(166, 82);
-			pictureBoxDog.SizeMode = PictureBoxSizeMode.StretchImage;
-			pictureBoxDog.TabIndex = 5;
-			pictureBoxDog.TabStop = false;
+			labelAnimalCount.AutoSize = true;
+			labelAnimalCount.Location = new Point(200, 72);
+			labelAnimalCount.Name = "labelAnimalCount";
+			labelAnimalCount.Size = new Size(0, 15);
+			labelAnimalCount.TabIndex = 9;
 			// 
-			// pictureBoxCarp
+			// textBoxBreed
 			// 
-			pictureBoxCarp.Location = new Point(381, 357);
-			pictureBoxCarp.Margin = new Padding(2);
-			pictureBoxCarp.Name = "pictureBoxCarp";
-			pictureBoxCarp.Size = new Size(166, 82);
-			pictureBoxCarp.SizeMode = PictureBoxSizeMode.StretchImage;
-			pictureBoxCarp.TabIndex = 6;
-			pictureBoxCarp.TabStop = false;
+			textBoxBreed.Location = new Point(11, 42);
+			textBoxBreed.Margin = new Padding(2);
+			textBoxBreed.Name = "textBoxBreed";
+			textBoxBreed.PlaceholderText = "Enter breed";
+			textBoxBreed.Size = new Size(172, 23);
+			textBoxBreed.TabIndex = 10;
+			// 
+			// textBoxDepth
+			// 
+			textBoxDepth.Location = new Point(11, 42);
+			textBoxDepth.Margin = new Padding(2);
+			textBoxDepth.Name = "textBoxDepth";
+			textBoxDepth.PlaceholderText = "Enter depth";
+			textBoxDepth.Size = new Size(172, 23);
+			textBoxDepth.TabIndex = 11;
+			// 
+			// textBoxAnimalsInfo
+			// 
+			textBoxAnimalsInfo.Location = new Point(11, 107);
+			textBoxAnimalsInfo.Margin = new Padding(2);
+			textBoxAnimalsInfo.Multiline = true;
+			textBoxAnimalsInfo.Name = "textBoxAnimalsInfo";
+			textBoxAnimalsInfo.ScrollBars = ScrollBars.Vertical;
+			textBoxAnimalsInfo.Size = new Size(217, 196);
+			textBoxAnimalsInfo.TabIndex = 12;
+			// 
+			// textBoxSpeed
+			// 
+			textBoxSpeed.Location = new Point(11, 43);
+			textBoxSpeed.Margin = new Padding(2);
+			textBoxSpeed.Name = "textBoxSpeed";
+			textBoxSpeed.PlaceholderText = "Enter flight speed";
+			textBoxSpeed.Size = new Size(172, 23);
+			textBoxSpeed.TabIndex = 13;
 			// 
 			// Form1
 			// 
 			AutoScaleDimensions = new SizeF(7F, 15F);
 			AutoScaleMode = AutoScaleMode.Font;
-			ClientSize = new Size(580, 488);
-			Controls.Add(pictureBoxCarp);
-			Controls.Add(pictureBoxDog);
-			Controls.Add(pictureBoxPike);
-			Controls.Add(pictureBoxEagle);
-			Controls.Add(pictureBoxTiger);
-			Controls.Add(TextBox1);
-			Controls.Add(Button1);
+			ClientSize = new Size(468, 314);
+			Controls.Add(textBoxSpeed);
+			Controls.Add(textBoxAnimalsInfo);
+			Controls.Add(textBoxDepth);
+			Controls.Add(textBoxBreed);
+			Controls.Add(labelAnimalCount);
+			Controls.Add(labelAnimalInfo);
+			Controls.Add(comboBoxAnimalType);
+			Controls.Add(pictureBoxAnimal);
+			Controls.Add(textBoxName);
+			Controls.Add(buttonCreate);
 			Margin = new Padding(2);
 			Name = "Form1";
 			Text = "Form1";
-			((System.ComponentModel.ISupportInitialize)pictureBoxTiger).EndInit();
-			((System.ComponentModel.ISupportInitialize)pictureBoxEagle).EndInit();
-			((System.ComponentModel.ISupportInitialize)pictureBoxPike).EndInit();
-			((System.ComponentModel.ISupportInitialize)pictureBoxDog).EndInit();
-			((System.ComponentModel.ISupportInitialize)pictureBoxCarp).EndInit();
+			((System.ComponentModel.ISupportInitialize)pictureBoxAnimal).EndInit();
 			ResumeLayout(false);
 			PerformLayout();
 		}
 
 		#endregion
 
-		private Button Button1;
-		private TextBox TextBox1;
-		private PictureBox pictureBoxTiger;
-		private PictureBox pictureBoxEagle;
-		private PictureBox pictureBoxPike;
-		private PictureBox pictureBoxDog;
-		private PictureBox pictureBoxCarp;
+		private Button buttonCreate;
+		private TextBox textBoxName;
+		private PictureBox pictureBoxAnimal;
+		private ComboBox comboBoxAnimalType;
+		private Label labelAnimalInfo;
+		private Label labelAnimalCount;
+		private TextBox textBoxBreed;
+		private TextBox textBoxDepth;
+		private TextBox textBoxAnimalsInfo;
+		private TextBox textBoxSpeed;
 	}
 }

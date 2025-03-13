@@ -1,7 +1,7 @@
-using OOP;
 using System;
+using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace OOP
 {
@@ -13,34 +13,132 @@ namespace OOP
 		{
 			InitializeComponent();
 			animalList = new AnimalList();
+			comboBoxAnimalType.Items.AddRange(new string[] { "Dog", "Tiger", "Carp", "Pike", "Eagle" });
+			textBoxBreed.Visible = false;
+			textBoxDepth.Visible = false;
+			textBoxName.Visible = false;
+			textBoxSpeed.Visible = false;
+			comboBoxAnimalType.SelectedIndexChanged += comboBoxAnimalType_SelectedIndexChanged;
+		}
+		private void comboBoxAnimalType_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			string animalType = comboBoxAnimalType.SelectedItem.ToString();
 
-			animalList.AddAnimal(new Tiger("tiger.png"));
-			animalList.AddAnimal(new Eagle("eagle.png"));
-			animalList.AddAnimal(new Pike("pike.png"));
-			animalList.AddAnimal(new Dog("dog.png"));
-			animalList.AddAnimal(new Carp("carp.png"));
+			textBoxBreed.Visible = false;
+			textBoxName.Visible = false;
+			textBoxDepth.Visible = false;
+			textBoxSpeed.Visible = false;
+
+			if (animalType == "Dog")
+			{
+				textBoxBreed.Visible = true;
+				textBoxName.Visible = true;
+			}
+			else if (animalType == "Carp" || animalType == "Pike")
+			{
+				textBoxDepth.Visible = true;
+			}
+			else if (animalType == "Eagle")
+			{
+				textBoxSpeed.Visible = true;
+			}
 		}
 
-		private void LoadImagesToPictureBoxes()
+		private void buttonCreate_Click(object sender, EventArgs e)
 		{
-			pictureBoxTiger.Image = Image.FromFile(animalList.GetAnimals()[0].ImagePath);
-			pictureBoxEagle.Image = Image.FromFile(animalList.GetAnimals()[1].ImagePath);
-			pictureBoxPike.Image = Image.FromFile(animalList.GetAnimals()[2].ImagePath);
-			pictureBoxDog.Image = Image.FromFile(animalList.GetAnimals()[3].ImagePath);
-			pictureBoxCarp.Image = Image.FromFile(animalList.GetAnimals()[4].ImagePath);
+			try
+			{
+				string animalType = comboBoxAnimalType.SelectedItem?.ToString();
+				if (animalType == null)
+				{
+					throw new Exception("Select an animal type");
+				}
+				string imagePath = $"{animalType.ToLower()}.png";
+				object[] additionalParameters = null;
+				if (animalType == "Dog")
+				{
+					try
+					{
+						string breed = textBoxBreed.Text;
+						string name = textBoxName.Text;
+
+						if (string.IsNullOrWhiteSpace(breed) || string.IsNullOrWhiteSpace(name))
+						{
+							throw new Exception("enter breed and name for the dog");
+						}
+
+						additionalParameters = new object[] { breed, name };
+					}
+					catch (Exception ex)
+					{
+						throw new Exception($"Dog creation error: {ex.Message}");
+					}
+				}
+				else if (animalType == "Carp" || animalType == "Pike")
+				{
+					try
+					{
+						int depth = int.Parse(textBoxDepth.Text);
+						additionalParameters = new object[] { depth };
+					}
+					catch (FormatException)
+					{
+						throw new Exception("Enter a valid depth (number)");
+					}
+					catch (Exception ex)
+					{
+						throw new Exception($"Fish creation error: {ex.Message}");
+					}
+				}
+				else if (animalType == "Eagle")
+				{
+					try
+					{
+						int flightspeed = int.Parse(textBoxSpeed.Text);
+						additionalParameters = new object[] { flightspeed };
+					}
+					catch (FormatException)
+					{
+						throw new Exception("Enter a valid flight speed (number)");
+					}
+					catch (Exception ex)
+					{
+						throw new Exception($"Eagle creation error: {ex.Message}");
+					}
+				}
+
+				Animal animal = AnimalFactory.CreateAnimal(animalType, imagePath, additionalParameters);
+
+				animalList.AddAnimal(animal);
+
+				try
+				{
+					if (!File.Exists(animal.ImagePath))
+					{
+						throw new Exception($"Image file not found: {animal.ImagePath}");
+					}
+					pictureBoxAnimal.Image = Image.FromFile(animal.ImagePath);
+				}
+				catch (Exception ex)
+				{
+					throw new Exception($"Image loading error: {ex.Message}");
+				}
+				UpdateAnimalsInfoTextBox();
+				labelAnimalCount.Text = $"Total animals created: {Animal.Count}";
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show($"{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
 		}
 
-		private void Button1_Click(object sender, EventArgs e)
+		private void UpdateAnimalsInfoTextBox()
 		{
-			TextBox1.Clear();
-			LoadImagesToPictureBoxes();
+			textBoxAnimalsInfo.Clear();
 
 			foreach (var animal in animalList.GetAnimals())
 			{
-				TextBox1.AppendText($"Type: {animal.Type}\r\n");
-				TextBox1.AppendText($"Species: {animal.Species}\r\n");
-				TextBox1.AppendText($"Sound: {animal.Sound()}\r\n");
-				TextBox1.AppendText($"Movement: {animal.Move()}\r\n\r\n");
+				textBoxAnimalsInfo.AppendText(animal.ToString() + Environment.NewLine);
 			}
 		}
 	}

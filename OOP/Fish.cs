@@ -9,7 +9,8 @@ namespace OOP
 {
 	public abstract class Fish : Animal
 	{
-		public Fish(string imagePath) : base(imagePath)
+		public int Depth { get; set; }
+		public Fish(string imagePath, int depth) : base(imagePath)
 		{
 			Type = "Fish";
 		}

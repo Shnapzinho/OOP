@@ -1,21 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using OOP;
 
-namespace OOP
+public class Dog : Animal
 {
-    class Dog:Mammal
-    {
-		public Dog(string imagePath) : base(imagePath)
-		{
-			Species = "Dog";
-		}
+	public string Name { get; set; }
+	public string Breed { get; set; }
 
-		public override string Sound()
-		{
-			return "woof";
-		}
+	public Dog(string imagePath, string name, string breed) : base(imagePath)
+	{
+		Species = "Dog";
+		Type = "Mammal";
+		Name = name;
+		Breed = breed;
+	}
+
+	public override string Sound()
+	{
+		return "woof";
+	}
+
+	public override string Move()
+	{
+		return "walking";
+	}
+
+	public override string ToString()
+	{
+		return $"{Name} {base.ToString()}, Breed: {Breed} - {Sound()}, {Move()}";
 	}
 }
