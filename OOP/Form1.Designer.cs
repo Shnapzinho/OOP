@@ -68,7 +68,7 @@ namespace OOP
 			// 
 			// pictureBoxAnimal
 			// 
-			pictureBoxAnimal.Location = new Point(247, 140);
+			pictureBoxAnimal.Location = new Point(303, 137);
 			pictureBoxAnimal.Margin = new Padding(2);
 			pictureBoxAnimal.Name = "pictureBoxAnimal";
 			pictureBoxAnimal.Size = new Size(182, 137);
@@ -126,7 +126,7 @@ namespace OOP
 			textBoxAnimalsInfo.Multiline = true;
 			textBoxAnimalsInfo.Name = "textBoxAnimalsInfo";
 			textBoxAnimalsInfo.ScrollBars = ScrollBars.Vertical;
-			textBoxAnimalsInfo.Size = new Size(217, 196);
+			textBoxAnimalsInfo.Size = new Size(269, 196);
 			textBoxAnimalsInfo.TabIndex = 12;
 			// 
 			// textBoxSpeed
@@ -142,7 +142,7 @@ namespace OOP
 			// 
 			AutoScaleDimensions = new SizeF(7F, 15F);
 			AutoScaleMode = AutoScaleMode.Font;
-			ClientSize = new Size(468, 314);
+			ClientSize = new Size(496, 325);
 			Controls.Add(textBoxSpeed);
 			Controls.Add(textBoxAnimalsInfo);
 			Controls.Add(textBoxDepth);
