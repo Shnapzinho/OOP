@@ -41,14 +41,19 @@ namespace OOP
 			labelAnimalCount = new Label();
 			textBoxBreed = new TextBox();
 			textBoxDepth = new TextBox();
-			textBoxAnimalsInfo = new TextBox();
+			textBoxAnimalInfo = new TextBox();
 			textBoxSpeed = new TextBox();
+			animalListView = new ListView();
+			buttonDelete = new Button();
+			buttonEdit = new Button();
+			buttonRedo = new Button();
+			buttonUndo = new Button();
 			((System.ComponentModel.ISupportInitialize)pictureBoxAnimal).BeginInit();
 			SuspendLayout();
 			// 
 			// buttonCreate
 			// 
-			buttonCreate.Location = new Point(281, 14);
+			buttonCreate.Location = new Point(244, 14);
 			buttonCreate.Margin = new Padding(2);
 			buttonCreate.Name = "buttonCreate";
 			buttonCreate.Size = new Size(99, 23);
@@ -68,10 +73,10 @@ namespace OOP
 			// 
 			// pictureBoxAnimal
 			// 
-			pictureBoxAnimal.Location = new Point(303, 137);
+			pictureBoxAnimal.Location = new Point(371, 82);
 			pictureBoxAnimal.Margin = new Padding(2);
 			pictureBoxAnimal.Name = "pictureBoxAnimal";
-			pictureBoxAnimal.Size = new Size(182, 137);
+			pictureBoxAnimal.Size = new Size(172, 164);
 			pictureBoxAnimal.SizeMode = PictureBoxSizeMode.StretchImage;
 			pictureBoxAnimal.TabIndex = 2;
 			pictureBoxAnimal.TabStop = false;
@@ -119,15 +124,16 @@ namespace OOP
 			textBoxDepth.Size = new Size(172, 23);
 			textBoxDepth.TabIndex = 11;
 			// 
-			// textBoxAnimalsInfo
+			// textBoxAnimalInfo
 			// 
-			textBoxAnimalsInfo.Location = new Point(11, 107);
-			textBoxAnimalsInfo.Margin = new Padding(2);
-			textBoxAnimalsInfo.Multiline = true;
-			textBoxAnimalsInfo.Name = "textBoxAnimalsInfo";
-			textBoxAnimalsInfo.ScrollBars = ScrollBars.Vertical;
-			textBoxAnimalsInfo.Size = new Size(269, 196);
-			textBoxAnimalsInfo.TabIndex = 12;
+			textBoxAnimalInfo.Location = new Point(351, 249);
+			textBoxAnimalInfo.Margin = new Padding(2);
+			textBoxAnimalInfo.Multiline = true;
+			textBoxAnimalInfo.Name = "textBoxAnimalInfo";
+			textBoxAnimalInfo.ReadOnly = true;
+			textBoxAnimalInfo.ScrollBars = ScrollBars.Vertical;
+			textBoxAnimalInfo.Size = new Size(211, 96);
+			textBoxAnimalInfo.TabIndex = 12;
 			// 
 			// textBoxSpeed
 			// 
@@ -138,13 +144,70 @@ namespace OOP
 			textBoxSpeed.Size = new Size(172, 23);
 			textBoxSpeed.TabIndex = 13;
 			// 
+			// animalListView
+			// 
+			animalListView.Location = new Point(11, 97);
+			animalListView.Name = "animalListView";
+			animalListView.Size = new Size(245, 248);
+			animalListView.TabIndex = 14;
+			animalListView.UseCompatibleStateImageBehavior = false;
+			// 
+			// buttonDelete
+			// 
+			buttonDelete.Location = new Point(454, 14);
+			buttonDelete.Margin = new Padding(2);
+			buttonDelete.Name = "buttonDelete";
+			buttonDelete.Size = new Size(99, 23);
+			buttonDelete.TabIndex = 15;
+			buttonDelete.Text = "Delete";
+			buttonDelete.UseVisualStyleBackColor = true;
+			buttonDelete.Click += buttonDelete_Click;
+			// 
+			// buttonEdit
+			// 
+			buttonEdit.Location = new Point(351, 14);
+			buttonEdit.Margin = new Padding(2);
+			buttonEdit.Name = "buttonEdit";
+			buttonEdit.Size = new Size(99, 23);
+			buttonEdit.TabIndex = 16;
+			buttonEdit.Text = "Edit";
+			buttonEdit.UseVisualStyleBackColor = true;
+			buttonEdit.Click += buttonEdit_Click;
+			// 
+			// buttonRedo
+			// 
+			buttonRedo.Location = new Point(463, 43);
+			buttonRedo.Margin = new Padding(2);
+			buttonRedo.Name = "buttonRedo";
+			buttonRedo.Size = new Size(59, 22);
+			buttonRedo.TabIndex = 17;
+			buttonRedo.Text = "Redo";
+			buttonRedo.UseVisualStyleBackColor = true;
+			buttonRedo.Click += buttonRedo_Click;
+			// 
+			// buttonUndo
+			// 
+			buttonUndo.Location = new Point(400, 42);
+			buttonUndo.Margin = new Padding(2);
+			buttonUndo.Name = "buttonUndo";
+			buttonUndo.Size = new Size(59, 24);
+			buttonUndo.TabIndex = 18;
+			buttonUndo.Text = "Undo";
+			buttonUndo.UseVisualStyleBackColor = true;
+			buttonUndo.Click += buttonUndo_Click;
+			// 
 			// Form1
 			// 
 			AutoScaleDimensions = new SizeF(7F, 15F);
 			AutoScaleMode = AutoScaleMode.Font;
-			ClientSize = new Size(496, 325);
+			ClientSize = new Size(596, 357);
+			Controls.Add(buttonUndo);
+			Controls.Add(buttonRedo);
+			Controls.Add(buttonEdit);
+			Controls.Add(buttonDelete);
+			Controls.Add(animalListView);
 			Controls.Add(textBoxSpeed);
-			Controls.Add(textBoxAnimalsInfo);
+			Controls.Add(textBoxAnimalInfo);
 			Controls.Add(textBoxDepth);
 			Controls.Add(textBoxBreed);
 			Controls.Add(labelAnimalCount);
@@ -156,6 +219,7 @@ namespace OOP
 			Margin = new Padding(2);
 			Name = "Form1";
 			Text = "Form1";
+			Load += Form1_Load;
 			((System.ComponentModel.ISupportInitialize)pictureBoxAnimal).EndInit();
 			ResumeLayout(false);
 			PerformLayout();
@@ -171,7 +235,12 @@ namespace OOP
 		private Label labelAnimalCount;
 		private TextBox textBoxBreed;
 		private TextBox textBoxDepth;
-		private TextBox textBoxAnimalsInfo;
+		private TextBox textBoxAnimalInfo;
 		private TextBox textBoxSpeed;
+		private ListView animalListView;
+		private Button buttonDelete;
+		private Button buttonEdit;
+		private Button buttonRedo;
+		private Button buttonUndo;
 	}
 }
