@@ -33,7 +33,8 @@ public static class AnimalFactory
 				parameters.AddRange(additionalParameters);
 			}
 
-			return (Animal)Activator.CreateInstance(type, parameters.ToArray());
+			var animal = (Animal)Activator.CreateInstance(type, parameters.ToArray());
+			return animal;
 		}
 		throw new ArgumentException($"Unknown animal type: {animalType}");
 	}

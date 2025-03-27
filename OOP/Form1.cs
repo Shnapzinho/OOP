@@ -11,6 +11,8 @@ namespace OOP
 	{
 		private AnimalList animalList;
 		private Animal selectedAnimal;
+		private readonly History history = new History();
+		private int? editingAnimalIndex = null;
 
 		public Form1()
 		{
@@ -21,10 +23,11 @@ namespace OOP
 			textBoxBreed.Visible = false;
 			textBoxDepth.Visible = false;
 			textBoxName.Visible = false;
-			textBoxSpeed.Visible = false;
+			textBoxFlightSpeed.Visible = false;
 			comboBoxAnimalType.SelectedIndexChanged += comboBoxAnimalType_SelectedIndexChanged;
 			buttonDelete.Enabled = false;
 			buttonEdit.Enabled = false;
+			UpdateUndoRedoButtons();
 		}
 
 		private void InitializeAnimalListView()
@@ -42,6 +45,7 @@ namespace OOP
 			{
 				int selectedIndex = animalListView.SelectedIndices[0];
 				selectedAnimal = animalList.GetAnimals()[selectedIndex];
+				editingAnimalIndex = selectedIndex;
 
 				try
 				{
@@ -70,6 +74,7 @@ namespace OOP
 			{
 				buttonDelete.Enabled = false;
 				buttonEdit.Enabled = false;
+				editingAnimalIndex = null;
 			}
 		}
 
@@ -91,24 +96,49 @@ namespace OOP
 		private void comboBoxAnimalType_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			string animalType = comboBoxAnimalType.SelectedItem?.ToString();
+			if (animalType == null) return;
 
 			textBoxBreed.Visible = false;
 			textBoxName.Visible = false;
 			textBoxDepth.Visible = false;
-			textBoxSpeed.Visible = false;
+			textBoxFlightSpeed.Visible = false;
 
-			if (animalType == "Dog")
+			var assembly = Assembly.GetExecutingAssembly();
+			var allTypes = assembly.GetTypes();
+			var baseClassType = typeof(Animal);
+
+			foreach (var type in allTypes)
 			{
-				textBoxBreed.Visible = true;
-				textBoxName.Visible = true;
-			}
-			else if (animalType == "Carp" || animalType == "Pike")
-			{
-				textBoxDepth.Visible = true;
-			}
-			else if (animalType == "Eagle")
-			{
-				textBoxSpeed.Visible = true;
+				if (type.IsClass && !type.IsAbstract && baseClassType.IsAssignableFrom(type) && type.Name == animalType)
+				{
+					var constructor = type.GetConstructors()
+						.OrderByDescending(c => c.GetParameters().Length)
+						.FirstOrDefault();
+
+					if (constructor == null) break;
+
+					var parameters = constructor.GetParameters().Skip(1);
+
+					foreach (var param in parameters)
+					{
+						switch (param.Name.ToLower())
+						{
+							case "name":
+								textBoxName.Visible = true;
+								break;
+							case "breed":
+								textBoxBreed.Visible = true;
+								break;
+							case "depth":
+								textBoxDepth.Visible = true;
+								break;
+							case "flightspeed":
+								textBoxFlightSpeed.Visible = true;
+								break;
+						}
+					}
+					break;
+				}
 			}
 		}
 
@@ -121,56 +151,94 @@ namespace OOP
 				{
 					throw new Exception("Select an animal type");
 				}
+
 				string imagePath = $"{animalType.ToLower()}.png";
-				object[] additionalParameters = null;
+				var assembly = Assembly.GetExecutingAssembly();
+				var allTypes = assembly.GetTypes();
+				var baseClassType = typeof(Animal);
 
-				if (animalType == "Dog")
+				Type type = null;
+				foreach (var t in allTypes)
 				{
-					string breed = textBoxBreed.Text;
-					string name = textBoxName.Text;
-
-					if (string.IsNullOrWhiteSpace(breed) || string.IsNullOrWhiteSpace(name))
+					if (t.IsClass && !t.IsAbstract && baseClassType.IsAssignableFrom(t) && t.Name == animalType)
 					{
-						throw new Exception("Enter breed and name for the dog");
+						type = t;
+						break;
 					}
-
-					additionalParameters = new object[] { breed, name };
-				}
-				else if (animalType == "Carp" || animalType == "Pike")
-				{
-					if (!int.TryParse(textBoxDepth.Text, out int depth))
-					{
-						throw new Exception("Enter a valid depth (number)");
-					}
-					additionalParameters = new object[] { depth };
-				}
-				else if (animalType == "Eagle")
-				{
-					if (!int.TryParse(textBoxSpeed.Text, out int flightspeed))
-					{
-						throw new Exception("Enter a valid flight speed (number)");
-					}
-					additionalParameters = new object[] { flightspeed };
 				}
 
-				Animal animal = AnimalFactory.CreateAnimal(animalType, imagePath, additionalParameters);
-				animalList.AddAnimal(animal);
+				if (type == null)
+				{
+					throw new Exception($"Unknown animal type: {animalType}");
+				}
+				var constructor = type.GetConstructors()
+					.OrderByDescending(c => c.GetParameters().Length)
+					.FirstOrDefault();
 
-				ListViewItem item = new ListViewItem(animal.GetType().Name);
-				item.SubItems.Add(animal.ToString());
-				item.Tag = animal;
-				animalListView.Items.Add(item);
+				if (constructor == null)
+				{
+					throw new Exception($"No suitable constructor found for {animalType}");
+				}
 
-				labelAnimalCount.Text = $"Total animals created: {Animal.Count}";
-				textBoxBreed.Text = "";
-				textBoxName.Text = "";
-				textBoxDepth.Text = "";
-				textBoxSpeed.Text = "";
+				var parameters = constructor.GetParameters();
+				var additionalParams = parameters.Skip(1).ToList();
+				object[] constructorParams = new object[additionalParams.Count + 1];
+				constructorParams[0] = imagePath;
+				for (int i = 0; i < additionalParams.Count; i++)
+				{
+					var param = additionalParams[i];
+					string paramName = param.Name.ToLower();
+					Control[] controls = this.Controls.Find($"textBox{paramName}", true);
+					if (controls.Length == 0 || !(controls[0] is TextBox textBox))
+					{
+						throw new Exception($"Input field for {param.Name} not found");
+					}
+					if (string.IsNullOrWhiteSpace(textBox.Text))
+					{
+						throw new Exception($"Field '{param.Name}' cannot be empty");
+					}
+
+					try
+					{
+						if (param.ParameterType == typeof(int))
+						{
+							if (!int.TryParse(textBox.Text, out int intValue))
+							{
+								throw new Exception($"Enter a valid {param.Name} (number)");
+							}
+							constructorParams[i + 1] = intValue;
+						}
+						else
+						{
+							constructorParams[i + 1] = Convert.ChangeType(textBox.Text, param.ParameterType);
+						}
+					}
+					catch (Exception ex)
+					{
+						throw new Exception($"Invalid value for {param.Name}: {ex.Message}");
+					}
+				}
+
+				Animal animal = (Animal)constructor.Invoke(constructorParams);
+				history.Execute(new HistoryAdd(animalList, animal));
+
+				UpdateAnimalListView();
+				UpdateAnimalCount();
+				ClearInputFields();
+				UpdateUndoRedoButtons();
 			}
 			catch (Exception ex)
 			{
 				MessageBox.Show($"{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
+		}
+
+		private void ClearInputFields()
+		{
+			textBoxBreed.Text = "";
+			textBoxName.Text = "";
+			textBoxDepth.Text = "";
+			textBoxFlightSpeed.Text = "";
 		}
 
 		private void buttonDelete_Click(object sender, EventArgs e)
@@ -182,108 +250,113 @@ namespace OOP
 
 				if (result == DialogResult.Yes)
 				{
-					animalList.RemoveAnimal(selectedAnimal);
-					animalListView.Items.RemoveAt(animalListView.SelectedIndices[0]);
-					Animal.Count--;
-					labelAnimalCount.Text = $"Total animals created: {Animal.Count}";
+					int index = animalListView.SelectedIndices[0];
+					history.Execute(new HistoryRemove(animalList, selectedAnimal, index));
 
-					pictureBoxAnimal.Image = null;
-					textBoxAnimalInfo.Text = "";
-					buttonDelete.Enabled = false;
-					buttonEdit.Enabled = false;
+					UpdateAnimalListView();
+					UpdateAnimalCount();
+					ClearSelection();
+					UpdateUndoRedoButtons();
 				}
 			}
 		}
 
+		private void ClearSelection()
+		{
+			pictureBoxAnimal.Image = null;
+			textBoxAnimalInfo.Text = "";
+			buttonDelete.Enabled = false;
+			buttonEdit.Enabled = false;
+			editingAnimalIndex = null;
+		}
+
 		private void buttonEdit_Click(object sender, EventArgs e)
 		{
-			if (selectedAnimal == null) return;
+			if (selectedAnimal == null || !editingAnimalIndex.HasValue) return;
 
 			Form editForm = new Form();
 			editForm.Text = $"Edit {selectedAnimal.GetType().Name}";
 			editForm.Size = new Size(300, 200);
 			editForm.StartPosition = FormStartPosition.CenterParent;
+			Animal originalAnimal = selectedAnimal;
+			Animal modifiedAnimal = null;
+			Type animalType = selectedAnimal.GetType();
+			var constructor = animalType.GetConstructors()
+				.OrderByDescending(c => c.GetParameters().Length)
+				.FirstOrDefault();
 
-			if (selectedAnimal is Dog dog)
+			if (constructor == null)
 			{
-				AddEditControls(editForm,
-					("Breed", dog.Breed),
-					("Name", dog.Name),
-					() =>
-					{
-						dog.Breed = ((TextBox)editForm.Controls["Breed"]).Text;
-						dog.Name = ((TextBox)editForm.Controls["Name"]).Text;
-					});
+				MessageBox.Show("Cannot find appropriate constructor", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
 			}
-			else if (selectedAnimal is Carp carp)
-			{
-				AddEditControls(editForm,
-					("Depth", carp.Depth.ToString()),
-					() =>
-					{
-						if (int.TryParse(((TextBox)editForm.Controls["Depth"]).Text, out int depth))
-							carp.Depth = depth;
-						else
-							throw new FormatException("Depth must be a number");
-					});
-			}
-			else if (selectedAnimal is Pike pike)
-			{
-				AddEditControls(editForm,
-					("Depth", pike.Depth.ToString()),
-					() =>
-					{
-						if (int.TryParse(((TextBox)editForm.Controls["Depth"]).Text, out int depth))
-							pike.Depth = depth;
-						else
-							throw new FormatException("Depth must be a number");
-					});
-			}
-			else if (selectedAnimal is Eagle eagle)
-			{
-				AddEditControls(editForm,
-					("Flight Speed", eagle.FlightSpeed.ToString()),
-					() =>
-					{
-						if (int.TryParse(((TextBox)editForm.Controls["Flight Speed"]).Text, out int speed))
-							eagle.FlightSpeed = speed;
-						else
-							throw new FormatException("Speed must be a number");
-					});
-			}
-
-			editForm.ShowDialog();
-			UpdateAnimalListView();
-		}
-
-		private void AddEditControls(Form form, params object[] controls)
-		{
+			var parameters = constructor.GetParameters();
+			var editableParameters = parameters.Skip(1).ToList();
 			int yPos = 20;
-			Action saveAction = null;
-
-			for (int i = 0; i < controls.Length; i++)
+			foreach (var param in editableParameters)
 			{
-				if (controls[i] is ValueTuple<string, string> control)
+				object currentValue = null;
+				var property = animalType.GetProperty(param.Name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+				if (property != null)
 				{
-					Label label = new Label() { Text = $"{control.Item1}:", Left = 10, Top = yPos };
-					TextBox textBox = new TextBox() { Text = control.Item2, Left = 120, Top = yPos, Width = 150, Name = control.Item1 };
-					form.Controls.Add(label);
-					form.Controls.Add(textBox);
-					yPos += 30;
+					currentValue = property.GetValue(selectedAnimal);
 				}
-				else if (controls[i] is Action action)
+				Label label = new Label()
 				{
-					saveAction = action;
-				}
+					Text = $"{param.Name}:",
+					Left = 10,
+					Top = yPos
+				};
+				TextBox textBox = new TextBox()
+				{
+					Text = currentValue?.ToString() ?? "",
+					Left = 120,
+					Top = yPos,
+					Width = 150,
+					Name = param.Name,
+					Tag = param.ParameterType 
+				};
+
+				editForm.Controls.Add(label);
+				editForm.Controls.Add(textBox);
+				yPos += 30;
 			}
 
 			Button saveButton = new Button() { Text = "Save", Left = 100, Top = yPos + 10, Width = 100 };
-			saveButton.Click += (s, e) =>
+			saveButton.Click += (s, ev) =>
 			{
 				try
 				{
-					saveAction?.Invoke();
-					form.Close();
+					List<object> constructorParams = new List<object> { selectedAnimal.ImagePath };
+
+					foreach (var param in editableParameters)
+					{
+						var textBox = (TextBox)editForm.Controls[param.Name];
+						object value;
+
+						try
+						{
+							if (param.ParameterType == typeof(int))
+							{
+								if (!int.TryParse(textBox.Text, out int intValue))
+									throw new FormatException($"{param.Name} must be a number");
+								value = intValue;
+							}
+							else
+							{
+								value = Convert.ChangeType(textBox.Text, param.ParameterType);
+							}
+						}
+						catch
+						{
+							throw new FormatException($"Invalid value for {param.Name}. Expected type: {param.ParameterType.Name}");
+						}
+
+						constructorParams.Add(value);
+					}
+
+					modifiedAnimal = (Animal)constructor.Invoke(constructorParams.ToArray());
+					editForm.Close();
 				}
 				catch (Exception ex)
 				{
@@ -291,7 +364,21 @@ namespace OOP
 				}
 			};
 
-			form.Controls.Add(saveButton);
+			editForm.Controls.Add(saveButton);
+
+			editForm.FormClosed += (s, args) =>
+			{
+				if (modifiedAnimal != null && editingAnimalIndex.HasValue)
+				{
+					history.Execute(new HistoryModify(
+						animalList, editingAnimalIndex.Value, originalAnimal, modifiedAnimal));
+
+					UpdateAnimalListView();
+					UpdateUndoRedoButtons();
+				}
+			};
+
+			editForm.ShowDialog();
 		}
 
 		private void UpdateAnimalListView()
@@ -315,18 +402,31 @@ namespace OOP
 			}
 		}
 
-		private void Form1_Load(object sender, EventArgs e)
-		{
-		}
-
 		private void buttonUndo_Click(object sender, EventArgs e)
 		{
-
+			history.Undo();
+			UpdateAnimalListView();
+			UpdateAnimalCount();
+			UpdateUndoRedoButtons();
 		}
 
 		private void buttonRedo_Click(object sender, EventArgs e)
 		{
+			history.Redo();
+			UpdateAnimalListView();
+			UpdateAnimalCount();
+			UpdateUndoRedoButtons();
+		}
 
+		private void UpdateUndoRedoButtons()
+		{
+			buttonUndo.Enabled = history.CanUndo;
+			buttonRedo.Enabled = history.CanRedo;
+		}
+		private void UpdateAnimalCount()
+		{
+			labelAnimalCount.Text = $"Total animals created: {animalList.Count}";
 		}
 	}
+
 }

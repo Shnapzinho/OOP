@@ -8,7 +8,7 @@ namespace OOP
 		public string ImagePath { get; set; }
 		public string Type { get; set; }
 		public string Species { get; set; }
-		public static int Count { get; set; }
+		public static int Count { get; private set; }
 
 		static Animal()
 		{
@@ -27,5 +27,6 @@ namespace OOP
 		{
 			return $"({Species}, {Type})";
 		}
+		
 	}
 }

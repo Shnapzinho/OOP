@@ -42,7 +42,7 @@ namespace OOP
 			textBoxBreed = new TextBox();
 			textBoxDepth = new TextBox();
 			textBoxAnimalInfo = new TextBox();
-			textBoxSpeed = new TextBox();
+			textBoxFlightSpeed = new TextBox();
 			animalListView = new ListView();
 			buttonDelete = new Button();
 			buttonEdit = new Button();
@@ -135,14 +135,14 @@ namespace OOP
 			textBoxAnimalInfo.Size = new Size(211, 96);
 			textBoxAnimalInfo.TabIndex = 12;
 			// 
-			// textBoxSpeed
+			// textBoxFlightSpeed
 			// 
-			textBoxSpeed.Location = new Point(11, 43);
-			textBoxSpeed.Margin = new Padding(2);
-			textBoxSpeed.Name = "textBoxSpeed";
-			textBoxSpeed.PlaceholderText = "Enter flight speed";
-			textBoxSpeed.Size = new Size(172, 23);
-			textBoxSpeed.TabIndex = 13;
+			textBoxFlightSpeed.Location = new Point(11, 43);
+			textBoxFlightSpeed.Margin = new Padding(2);
+			textBoxFlightSpeed.Name = "textBoxFlightSpeed";
+			textBoxFlightSpeed.PlaceholderText = "Enter flight speed";
+			textBoxFlightSpeed.Size = new Size(172, 23);
+			textBoxFlightSpeed.TabIndex = 13;
 			// 
 			// animalListView
 			// 
@@ -206,7 +206,7 @@ namespace OOP
 			Controls.Add(buttonEdit);
 			Controls.Add(buttonDelete);
 			Controls.Add(animalListView);
-			Controls.Add(textBoxSpeed);
+			Controls.Add(textBoxFlightSpeed);
 			Controls.Add(textBoxAnimalInfo);
 			Controls.Add(textBoxDepth);
 			Controls.Add(textBoxBreed);
@@ -219,7 +219,6 @@ namespace OOP
 			Margin = new Padding(2);
 			Name = "Form1";
 			Text = "Form1";
-			Load += Form1_Load;
 			((System.ComponentModel.ISupportInitialize)pictureBoxAnimal).EndInit();
 			ResumeLayout(false);
 			PerformLayout();
@@ -236,7 +235,7 @@ namespace OOP
 		private TextBox textBoxBreed;
 		private TextBox textBoxDepth;
 		private TextBox textBoxAnimalInfo;
-		private TextBox textBoxSpeed;
+		private TextBox textBoxFlightSpeed;
 		private ListView animalListView;
 		private Button buttonDelete;
 		private Button buttonEdit;

@@ -6,6 +6,7 @@ namespace OOP
 	public class AnimalList
 	{
 		private List<Animal> animals = new List<Animal>();
+		public int Count => animals.Count;
 
 		public void AddAnimal(Animal animal)
 		{
