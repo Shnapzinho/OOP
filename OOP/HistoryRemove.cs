@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OOP
 {
-	public class HistoryRemove : ICommand
+	public class HistoryRemove : HistoryInt
 	{
 		private readonly AnimalList _animalList;
 		private readonly Animal _animal;

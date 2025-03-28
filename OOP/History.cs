@@ -1,12 +1,17 @@
 ﻿using System.Windows.Input;
 
 namespace OOP;
+public interface HistoryInt
+{
+	void Execute();
+	void Undo();
+}
 public class History
 {
-	private readonly Stack<ICommand> undoStack = new Stack<ICommand>();
-	private readonly Stack<ICommand> redoStack = new Stack<ICommand>();
+	private readonly Stack<HistoryInt> undoStack = new Stack<HistoryInt>();
+	private readonly Stack<HistoryInt> redoStack = new Stack<HistoryInt>();
 
-	public void Execute(ICommand command)
+	public void Execute(HistoryInt command)
 	{
 		command.Execute();
 		undoStack.Push(command);
@@ -35,10 +40,4 @@ public class History
 
 	public bool CanUndo => undoStack.Count > 0;
 	public bool CanRedo => redoStack.Count > 0;
-}
-
-public interface ICommand
-{
-	void Execute();
-	void Undo();
 }
