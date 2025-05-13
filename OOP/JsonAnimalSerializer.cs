@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
@@ -13,17 +14,45 @@ namespace OOP
 
 		static JsonAnimalSerializer()
 		{
-			AnimalTypes = new Dictionary<string, Type>();
-			var assembly = Assembly.GetExecutingAssembly();
+			AnimalTypes = LoadAnimalTypes();
+		}
+
+		private static Dictionary<string, Type> LoadAnimalTypes()
+		{
+			var types = new Dictionary<string, Type>();
 			var animalType = typeof(Animal);
 
-			foreach (var type in assembly.GetTypes())
+			// Загрузка из текущей сборки
+			foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
 			{
 				if (type.IsClass && !type.IsAbstract && animalType.IsAssignableFrom(type))
 				{
-					AnimalTypes.Add(type.Name, type);
+					types.Add(type.Name, type);
 				}
 			}
+
+			// Загрузка из дополнительных сборок
+			string extensionsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Extensions");
+			if (Directory.Exists(extensionsPath))
+			{
+				foreach (string dll in Directory.GetFiles(extensionsPath, "*.dll"))
+				{
+					try
+					{
+						Assembly assembly = Assembly.LoadFrom(dll);
+						foreach (var type in assembly.GetTypes())
+						{
+							if (type.IsClass && !type.IsAbstract && animalType.IsAssignableFrom(type))
+							{
+								types.Add(type.Name, type);
+							}
+						}
+					}
+					catch { /* Игнорируем ошибки */ }
+				}
+			}
+
+			return types;
 		}
 
 		public string Serialize(List<Animal> animals)
@@ -31,7 +60,7 @@ namespace OOP
 			var options = new JsonSerializerOptions
 			{
 				WriteIndented = true,
-				Converters = { new AnimalConverter() } 
+				Converters = { new AnimalConverter() }
 			};
 			return JsonSerializer.Serialize(animals, options);
 		}
@@ -40,12 +69,12 @@ namespace OOP
 		{
 			var options = new JsonSerializerOptions
 			{
-				Converters = { new AnimalConverter() } 
+				Converters = { new AnimalConverter() }
 			};
 			return JsonSerializer.Deserialize<List<Animal>>(data, options) ?? new List<Animal>();
 		}
 
-		private class AnimalConverter : JsonConverter<Animal> 
+		private class AnimalConverter : JsonConverter<Animal>
 		{
 			public override bool CanConvert(Type typeToConvert)
 			{

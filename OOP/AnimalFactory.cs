@@ -1,41 +1,72 @@
-﻿using OOP;
+﻿// AnimalFactory.cs
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.IO;
 
-public static class AnimalFactory
+namespace OOP
 {
-	private static readonly Dictionary<string, Type> AnimalTypes;
-
-	static AnimalFactory()
+	public static class AnimalFactory
 	{
-		AnimalTypes = new Dictionary<string, Type>();
-		var assembly = Assembly.GetExecutingAssembly();
-		var animalType = typeof(Animal);
+		private static Dictionary<string, Type> AnimalTypes;
 
-		foreach (var type in assembly.GetTypes())
+		static AnimalFactory()
 		{
-			if (type.IsClass && !type.IsAbstract && animalType.IsAssignableFrom(type))
+			AnimalTypes = new Dictionary<string, Type>();
+			LoadAnimalTypes(Assembly.GetExecutingAssembly());
+
+			// Загрузка дополнительных сборок из папки Extensions
+			string extensionsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Extensions");
+			if (Directory.Exists(extensionsPath))
 			{
-				AnimalTypes.Add(type.Name, type);
+				foreach (string dll in Directory.GetFiles(extensionsPath, "*.dll"))
+				{
+					try
+					{
+						Assembly assembly = Assembly.LoadFrom(dll);
+						LoadAnimalTypes(assembly);
+					}
+					catch (Exception ex)
+					{
+						Console.WriteLine($"Error loading assembly {dll}: {ex.Message}");
+					}
+				}
 			}
 		}
-	}
 
-	public static Animal CreateAnimal(string animalType, string imagePath, params object[] additionalParameters)
-	{
-		if (AnimalTypes.TryGetValue(animalType, out Type type))
+		private static void LoadAnimalTypes(Assembly assembly)
 		{
-			var parameters = new List<object> { imagePath };
-			if (additionalParameters != null)
-			{
-				parameters.AddRange(additionalParameters);
-			}
+			var animalType = typeof(Animal);
 
-			var animal = (Animal)Activator.CreateInstance(type, parameters.ToArray());
-			return animal;
+			foreach (var type in assembly.GetTypes())
+			{
+				if (type.IsClass && !type.IsAbstract && animalType.IsAssignableFrom(type))
+				{
+					AnimalTypes[type.Name] = type;
+				}
+			}
 		}
-		throw new ArgumentException($"Unknown animal type: {animalType}");
+
+		public static IEnumerable<string> GetAvailableAnimalTypes()
+		{
+			return AnimalTypes.Keys.OrderBy(x => x);
+		}
+
+		// Остальной код остается без изменений
+		public static Animal CreateAnimal(string animalType, string imagePath, params object[] additionalParameters)
+		{
+			if (AnimalTypes.TryGetValue(animalType, out Type type))
+			{
+				var parameters = new List<object> { imagePath };
+				if (additionalParameters != null)
+				{
+					parameters.AddRange(additionalParameters);
+				}
+
+				return (Animal)Activator.CreateInstance(type, parameters.ToArray());
+			}
+			throw new ArgumentException($"Unknown animal type: {animalType}");
+		}
 	}
 }

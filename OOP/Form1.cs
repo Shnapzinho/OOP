@@ -210,18 +210,13 @@ namespace OOP
 			}
 		}
 
+
 		private void InitializeComboBox()
 		{
-			var assembly = Assembly.GetExecutingAssembly();
-			var allTypes = assembly.GetTypes();
-			var baseClassType = typeof(Animal);
-
-			foreach (var type in allTypes)
+			comboBoxAnimalType.Items.Clear();
+			foreach (var typeName in AnimalFactory.GetAvailableAnimalTypes())
 			{
-				if (type.IsClass && !type.IsAbstract && baseClassType.IsAssignableFrom(type))
-				{
-					comboBoxAnimalType.Items.Add(type.Name);
-				}
+				comboBoxAnimalType.Items.Add(typeName);
 			}
 		}
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
@@ -18,7 +19,7 @@ namespace OOP
 		{
 			try
 			{
-				var wrapper = new AnimalListWrapper { Animals = animals };             
+				var wrapper = new AnimalListWrapper { Animals = animals };
 				var serializer = new XmlSerializer(typeof(AnimalListWrapper), GetAnimalTypes());
 				using var writer = new StringWriter();
 				serializer.Serialize(writer, wrapper);
@@ -51,10 +52,45 @@ namespace OOP
 
 		private Type[] GetAnimalTypes()
 		{
-			return Assembly.GetExecutingAssembly()
-				.GetTypes()
-				.Where(t => t.IsClass && !t.IsAbstract && typeof(Animal).IsAssignableFrom(t))
-				.ToArray();
+			var animalTypes = new List<Type>();
+
+			// Загрузка типов из основной сборки
+			animalTypes.AddRange(
+				Assembly.GetExecutingAssembly()
+					.GetTypes()
+					.Where(t => t.IsClass && !t.IsAbstract && typeof(Animal).IsAssignableFrom(t))
+			);
+
+			// Загрузка типов из дополнительных сборок в папке Extensions
+			string extensionsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Extensions");
+			if (Directory.Exists(extensionsPath))
+			{
+				foreach (string dll in Directory.GetFiles(extensionsPath, "*.dll"))
+				{
+					try
+					{
+						Assembly assembly = Assembly.LoadFrom(dll);
+						animalTypes.AddRange(
+							assembly.GetTypes()
+								.Where(t => t.IsClass && !t.IsAbstract && typeof(Animal).IsAssignableFrom(t))
+						);
+					}
+					catch
+					{
+						// Игнорируем сборки, которые не удалось загрузить
+					}
+				}
+			}
+
+			return animalTypes.ToArray();
+		}
+
+		// Метод для проверки доступных типов (может быть полезен для отладки)
+		public static IEnumerable<string> GetAvailableAnimalTypeNames()
+		{
+			return new XmlAnimalSerializer().GetAnimalTypes()
+				.Select(t => t.Name)
+				.OrderBy(name => name);
 		}
 	}
 }
