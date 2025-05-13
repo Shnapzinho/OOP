@@ -3,9 +3,15 @@ using System;
 
 namespace OOP
 {
+	[Serializable]
 	public class Eagle : Bird
 	{
 		public int FlightSpeed { get; set; }
+		public Eagle() : base("")
+		{
+			Species = "Eagle";
+			FlightSpeed = 0;
+		}
 		public Eagle(string imagePath, int flightSpeed) : base(imagePath)
 		{
 			Species = "Eagle";

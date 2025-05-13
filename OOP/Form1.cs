@@ -11,15 +11,19 @@ namespace OOP
 	{
 		private AnimalList animalList;
 		private Animal selectedAnimal;
-		private readonly History history = new History();
+		private History history;
 		private int? editingAnimalIndex = null;
+		private Dictionary<string, ISerializer> serializers;
 
 		public Form1()
 		{
 			InitializeComponent();
+			history = new History();
 			animalList = new AnimalList();
+			InitializeSerializers();
 			InitializeComboBox();
 			InitializeAnimalListView();
+			InitializeMenu();
 			textBoxBreed.Visible = false;
 			textBoxDepth.Visible = false;
 			textBoxName.Visible = false;
@@ -28,6 +32,134 @@ namespace OOP
 			buttonDelete.Enabled = false;
 			buttonEdit.Enabled = false;
 			UpdateUndoRedoButtons();
+		}
+
+		private void InitializeSerializers()
+		{
+			serializers = new Dictionary<string, ISerializer>
+	{
+		{ "JSON", new JsonAnimalSerializer() },
+		{ "XML", new XmlAnimalSerializer() } 
+    };
+		}
+
+		private void InitializeMenu()
+		{
+			MenuStrip mainMenu = new MenuStrip();
+			this.MainMenuStrip = mainMenu;
+			this.Controls.Add(mainMenu);
+
+			ToolStripMenuItem fileMenu = new ToolStripMenuItem("File");
+
+			ToolStripMenuItem saveMenu = new ToolStripMenuItem("Save");
+
+			foreach (var format in serializers.Keys)
+			{
+				ToolStripMenuItem formatItem = new ToolStripMenuItem(format);
+				formatItem.Click += (sender, e) => SaveToFile(format);
+				saveMenu.DropDownItems.Add(formatItem);
+			}
+
+			ToolStripMenuItem openMenu = new ToolStripMenuItem("Open");
+
+			foreach (var format in serializers.Keys)
+			{
+				ToolStripMenuItem formatItem = new ToolStripMenuItem(format);
+				formatItem.Click += (sender, e) => OpenFromFile(format);
+				openMenu.DropDownItems.Add(formatItem);
+			}
+
+			fileMenu.DropDownItems.Add(saveMenu);
+			fileMenu.DropDownItems.Add(openMenu);
+			mainMenu.Items.Add(fileMenu);
+		}
+
+		private void SaveToFile(string format)
+		{
+			using var saveFileDialog = new SaveFileDialog
+			{
+				Filter = $"{format} files (*.{format.ToLower()})|*.{format.ToLower()}",
+				Title = $"Save animals as {format}",
+				DefaultExt = format.ToLower(),
+				AddExtension = true,
+				OverwritePrompt = true 
+			};
+
+			if (saveFileDialog.ShowDialog() == DialogResult.OK)
+			{
+				try
+				{
+					var animals = animalList.GetAnimals();
+					if (!animals.Any())
+					{
+						MessageBox.Show("Animal list is empty!", "Warning",
+							MessageBoxButtons.OK, MessageBoxIcon.Warning);
+						return;
+					}
+
+					string data = serializers[format].Serialize(animals);
+					File.WriteAllText(saveFileDialog.FileName, data);
+
+					MessageBox.Show($"File saved successfully!\n{saveFileDialog.FileName}", "Success",
+						MessageBoxButtons.OK, MessageBoxIcon.Information);
+				}
+				catch (Exception ex)
+				{
+					MessageBox.Show($"Error saving file:\n{ex.Message}", "Error",
+						MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
+			}
+		}
+
+		private void OpenFromFile(string format)
+		{
+			using var openFileDialog = new OpenFileDialog
+			{
+				Filter = $"{format} files (*.{format.ToLower()})|*.{format.ToLower()}",
+				Title = $"Open animals from {format} file",
+				CheckFileExists = true,
+				Multiselect = false
+			};
+
+			if (openFileDialog.ShowDialog() == DialogResult.OK)
+			{
+				try
+				{
+					string data = File.ReadAllText(openFileDialog.FileName);
+					var animals = serializers[format].Deserialize(data) ?? throw new Exception("No animals found in file");
+
+					if (!animals.Any())
+					{
+						MessageBox.Show("The file contains no animals!", "Warning",
+							MessageBoxButtons.OK, MessageBoxIcon.Warning);
+						return;
+					}
+
+					if (animalList.Count > 0)
+					{
+						var result = MessageBox.Show("This will overwrite current animals. Continue?", "Confirmation",
+							MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+						if (result != DialogResult.Yes) return;
+					}
+
+					animalList = new AnimalList();
+					animals.ForEach(animalList.AddAnimal);
+					UpdateAnimalListView();
+					UpdateAnimalCount();
+					ClearSelection();
+					history = new History();
+					UpdateUndoRedoButtons();
+
+					MessageBox.Show($"File loaded successfully!\n{openFileDialog.FileName}", "Success",
+						MessageBoxButtons.OK, MessageBoxIcon.Information);
+				}
+				catch (Exception ex)
+				{
+					MessageBox.Show($"Error loading file:\n{ex.Message}", "Error",
+						MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
+			}
 		}
 
 		private void InitializeAnimalListView()
@@ -287,7 +419,7 @@ namespace OOP
 
 			if (constructor == null)
 			{
-				MessageBox.Show("Cannot find appropriate constructor", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show("Canýt find constructor", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
 			var parameters = constructor.GetParameters();
@@ -314,7 +446,7 @@ namespace OOP
 					Top = yPos,
 					Width = 150,
 					Name = param.Name,
-					Tag = param.ParameterType 
+					Tag = param.ParameterType
 				};
 
 				editForm.Controls.Add(label);

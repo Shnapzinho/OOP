@@ -3,22 +3,24 @@ using System;
 
 namespace OOP
 {
-    class Carp:Fish
-    {
+	[Serializable]
+	public class Carp : Fish
+	{
+		public Carp() : base("", 0)
+		{
+			Species = "Carp";
+		}
+
 		public Carp(string imagePath, int depth) : base(imagePath, depth)
 		{
 			Species = "Carp";
-			Depth = depth;
 		}
 
-		public override string Sound()
-		{
-			return "boolk";
-		}
+		public override string Sound() => "boolk";
 
 		public override string ToString()
 		{
-			return $"{base.ToString()}, Depth: {Depth}m - {Sound()}, {Move()}";
+			return $"{base.ToString()}{GetFishInfo()}";
 		}
 	}
 }

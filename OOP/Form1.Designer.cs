@@ -48,15 +48,16 @@ namespace OOP
 			buttonEdit = new Button();
 			buttonRedo = new Button();
 			buttonUndo = new Button();
+			openFileDialog = new OpenFileDialog();
+			saveFileDialog = new SaveFileDialog();
 			((System.ComponentModel.ISupportInitialize)pictureBoxAnimal).BeginInit();
 			SuspendLayout();
 			// 
 			// buttonCreate
 			// 
-			buttonCreate.Location = new Point(244, 14);
-			buttonCreate.Margin = new Padding(2);
+			buttonCreate.Location = new Point(346, 48);
 			buttonCreate.Name = "buttonCreate";
-			buttonCreate.Size = new Size(99, 23);
+			buttonCreate.Size = new Size(141, 38);
 			buttonCreate.TabIndex = 0;
 			buttonCreate.Text = "Create";
 			buttonCreate.UseVisualStyleBackColor = true;
@@ -64,19 +65,17 @@ namespace OOP
 			// 
 			// textBoxName
 			// 
-			textBoxName.Location = new Point(11, 69);
-			textBoxName.Margin = new Padding(2);
+			textBoxName.Location = new Point(13, 140);
 			textBoxName.Name = "textBoxName";
 			textBoxName.PlaceholderText = "Enter name";
-			textBoxName.Size = new Size(172, 23);
+			textBoxName.Size = new Size(244, 31);
 			textBoxName.TabIndex = 1;
 			// 
 			// pictureBoxAnimal
 			// 
-			pictureBoxAnimal.Location = new Point(371, 82);
-			pictureBoxAnimal.Margin = new Padding(2);
+			pictureBoxAnimal.Location = new Point(527, 162);
 			pictureBoxAnimal.Name = "pictureBoxAnimal";
-			pictureBoxAnimal.Size = new Size(172, 164);
+			pictureBoxAnimal.Size = new Size(246, 273);
 			pictureBoxAnimal.SizeMode = PictureBoxSizeMode.StretchImage;
 			pictureBoxAnimal.TabIndex = 2;
 			pictureBoxAnimal.TabStop = false;
@@ -84,80 +83,79 @@ namespace OOP
 			// comboBoxAnimalType
 			// 
 			comboBoxAnimalType.FormattingEnabled = true;
-			comboBoxAnimalType.Location = new Point(11, 14);
+			comboBoxAnimalType.Location = new Point(13, 48);
+			comboBoxAnimalType.Margin = new Padding(4, 5, 4, 5);
 			comboBoxAnimalType.Name = "comboBoxAnimalType";
-			comboBoxAnimalType.Size = new Size(172, 23);
+			comboBoxAnimalType.Size = new Size(244, 33);
 			comboBoxAnimalType.TabIndex = 7;
 			comboBoxAnimalType.SelectedIndexChanged += comboBoxAnimalType_SelectedIndexChanged;
 			// 
 			// labelAnimalInfo
 			// 
 			labelAnimalInfo.AutoSize = true;
-			labelAnimalInfo.Location = new Point(200, 46);
+			labelAnimalInfo.Location = new Point(283, 102);
+			labelAnimalInfo.Margin = new Padding(4, 0, 4, 0);
 			labelAnimalInfo.Name = "labelAnimalInfo";
-			labelAnimalInfo.Size = new Size(0, 15);
+			labelAnimalInfo.Size = new Size(0, 25);
 			labelAnimalInfo.TabIndex = 8;
 			// 
 			// labelAnimalCount
 			// 
 			labelAnimalCount.AutoSize = true;
-			labelAnimalCount.Location = new Point(200, 72);
+			labelAnimalCount.Location = new Point(283, 145);
+			labelAnimalCount.Margin = new Padding(4, 0, 4, 0);
 			labelAnimalCount.Name = "labelAnimalCount";
-			labelAnimalCount.Size = new Size(0, 15);
+			labelAnimalCount.Size = new Size(0, 25);
 			labelAnimalCount.TabIndex = 9;
 			// 
 			// textBoxBreed
 			// 
-			textBoxBreed.Location = new Point(11, 42);
-			textBoxBreed.Margin = new Padding(2);
+			textBoxBreed.Location = new Point(13, 95);
 			textBoxBreed.Name = "textBoxBreed";
 			textBoxBreed.PlaceholderText = "Enter breed";
-			textBoxBreed.Size = new Size(172, 23);
+			textBoxBreed.Size = new Size(244, 31);
 			textBoxBreed.TabIndex = 10;
 			// 
 			// textBoxDepth
 			// 
-			textBoxDepth.Location = new Point(11, 42);
-			textBoxDepth.Margin = new Padding(2);
+			textBoxDepth.Location = new Point(13, 95);
 			textBoxDepth.Name = "textBoxDepth";
 			textBoxDepth.PlaceholderText = "Enter depth";
-			textBoxDepth.Size = new Size(172, 23);
+			textBoxDepth.Size = new Size(244, 31);
 			textBoxDepth.TabIndex = 11;
 			// 
 			// textBoxAnimalInfo
 			// 
-			textBoxAnimalInfo.Location = new Point(351, 249);
-			textBoxAnimalInfo.Margin = new Padding(2);
+			textBoxAnimalInfo.Location = new Point(498, 440);
 			textBoxAnimalInfo.Multiline = true;
 			textBoxAnimalInfo.Name = "textBoxAnimalInfo";
 			textBoxAnimalInfo.ReadOnly = true;
 			textBoxAnimalInfo.ScrollBars = ScrollBars.Vertical;
-			textBoxAnimalInfo.Size = new Size(211, 96);
+			textBoxAnimalInfo.Size = new Size(300, 157);
 			textBoxAnimalInfo.TabIndex = 12;
 			// 
 			// textBoxFlightSpeed
 			// 
-			textBoxFlightSpeed.Location = new Point(11, 43);
-			textBoxFlightSpeed.Margin = new Padding(2);
+			textBoxFlightSpeed.Location = new Point(13, 97);
 			textBoxFlightSpeed.Name = "textBoxFlightSpeed";
 			textBoxFlightSpeed.PlaceholderText = "Enter flight speed";
-			textBoxFlightSpeed.Size = new Size(172, 23);
+			textBoxFlightSpeed.Size = new Size(244, 31);
 			textBoxFlightSpeed.TabIndex = 13;
 			// 
 			// animalListView
 			// 
-			animalListView.Location = new Point(11, 97);
+			animalListView.Location = new Point(13, 187);
+			animalListView.Margin = new Padding(4, 5, 4, 5);
 			animalListView.Name = "animalListView";
-			animalListView.Size = new Size(245, 248);
+			animalListView.Size = new Size(348, 411);
 			animalListView.TabIndex = 14;
 			animalListView.UseCompatibleStateImageBehavior = false;
 			// 
 			// buttonDelete
 			// 
-			buttonDelete.Location = new Point(454, 14);
-			buttonDelete.Margin = new Padding(2);
+			buttonDelete.Location = new Point(646, 48);
 			buttonDelete.Name = "buttonDelete";
-			buttonDelete.Size = new Size(99, 23);
+			buttonDelete.Size = new Size(141, 38);
 			buttonDelete.TabIndex = 15;
 			buttonDelete.Text = "Delete";
 			buttonDelete.UseVisualStyleBackColor = true;
@@ -165,10 +163,9 @@ namespace OOP
 			// 
 			// buttonEdit
 			// 
-			buttonEdit.Location = new Point(351, 14);
-			buttonEdit.Margin = new Padding(2);
+			buttonEdit.Location = new Point(498, 48);
 			buttonEdit.Name = "buttonEdit";
-			buttonEdit.Size = new Size(99, 23);
+			buttonEdit.Size = new Size(141, 38);
 			buttonEdit.TabIndex = 16;
 			buttonEdit.Text = "Edit";
 			buttonEdit.UseVisualStyleBackColor = true;
@@ -176,10 +173,9 @@ namespace OOP
 			// 
 			// buttonRedo
 			// 
-			buttonRedo.Location = new Point(463, 43);
-			buttonRedo.Margin = new Padding(2);
+			buttonRedo.Location = new Point(658, 97);
 			buttonRedo.Name = "buttonRedo";
-			buttonRedo.Size = new Size(59, 22);
+			buttonRedo.Size = new Size(84, 37);
 			buttonRedo.TabIndex = 17;
 			buttonRedo.Text = "Redo";
 			buttonRedo.UseVisualStyleBackColor = true;
@@ -187,20 +183,23 @@ namespace OOP
 			// 
 			// buttonUndo
 			// 
-			buttonUndo.Location = new Point(400, 42);
-			buttonUndo.Margin = new Padding(2);
+			buttonUndo.Location = new Point(568, 95);
 			buttonUndo.Name = "buttonUndo";
-			buttonUndo.Size = new Size(59, 24);
+			buttonUndo.Size = new Size(84, 40);
 			buttonUndo.TabIndex = 18;
 			buttonUndo.Text = "Undo";
 			buttonUndo.UseVisualStyleBackColor = true;
 			buttonUndo.Click += buttonUndo_Click;
 			// 
+			// openFileDialog
+			// 
+			openFileDialog.FileName = "openFileDialog1";
+			// 
 			// Form1
 			// 
-			AutoScaleDimensions = new SizeF(7F, 15F);
+			AutoScaleDimensions = new SizeF(10F, 25F);
 			AutoScaleMode = AutoScaleMode.Font;
-			ClientSize = new Size(596, 357);
+			ClientSize = new Size(865, 630);
 			Controls.Add(buttonUndo);
 			Controls.Add(buttonRedo);
 			Controls.Add(buttonEdit);
@@ -216,7 +215,6 @@ namespace OOP
 			Controls.Add(pictureBoxAnimal);
 			Controls.Add(textBoxName);
 			Controls.Add(buttonCreate);
-			Margin = new Padding(2);
 			Name = "Form1";
 			Text = "Form1";
 			((System.ComponentModel.ISupportInitialize)pictureBoxAnimal).EndInit();
@@ -241,5 +239,7 @@ namespace OOP
 		private Button buttonEdit;
 		private Button buttonRedo;
 		private Button buttonUndo;
+		private OpenFileDialog openFileDialog;
+		private SaveFileDialog saveFileDialog;
 	}
 }

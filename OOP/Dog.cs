@@ -1,31 +1,27 @@
-﻿using OOP;
-using System;
-
-public class Dog : Animal
+﻿namespace OOP
 {
-	public string Name { get; set; }
-	public string Breed { get; set; }
-
-	public Dog(string imagePath, string name, string breed) : base(imagePath)
+	[Serializable]
+	public class Dog : Animal
 	{
-		Species = "Dog";
-		Type = "Mammal";
-		Name = name;
-		Breed = breed;
-	}
+		public string Name { get; set; }
+		public string Breed { get; set; }
 
-	public override string Sound()
-	{
-		return "woof";
-	}
+		public Dog() : this("", "", "") { }
 
-	public override string Move()
-	{
-		return "walking";
-	}
+		public Dog(string imagePath, string name, string breed) : base(imagePath)
+		{
+			Species = "Dog";
+			Type = "Mammal";
+			Name = name ?? "";
+			Breed = breed ?? "";
+		}
 
-	public override string ToString()
-	{
-		return $"{Name} {base.ToString()}, Breed: {Breed} - {Sound()}, {Move()}";
+		public override string Sound() => "woof";
+		public override string Move() => "walking";
+
+		public override string ToString()
+		{
+			return $"{Name} {base.ToString()}, Breed: {Breed} - {Sound()}, {Move()}";
+		}
 	}
 }
