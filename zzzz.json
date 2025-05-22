@@ -1,0 +1,16 @@
+[
+  {
+    "TypeName": "Carp",
+    "Depth": 12,
+    "ImagePath": "carp.png",
+    "Type": "Fish",
+    "Species": "Carp"
+  },
+  {
+    "TypeName": "Eagle",
+    "FlightSpeed": 22,
+    "ImagePath": "eagle.png",
+    "Type": "Bird",
+    "Species": "Eagle"
+  }
+]

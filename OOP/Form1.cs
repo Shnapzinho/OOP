@@ -14,6 +14,8 @@ namespace OOP
 		private History history;
 		private int? editingAnimalIndex = null;
 		private Dictionary<string, ISerializer> serializers;
+		private List<IDataProcessorPlugin> plugins = new List<IDataProcessorPlugin>();
+		private Dictionary<string, bool> activePlugins = new Dictionary<string, bool>();
 
 		public Form1()
 		{
@@ -21,6 +23,7 @@ namespace OOP
 			history = new History();
 			animalList = new AnimalList();
 			InitializeSerializers();
+			LoadPlugins();
 			InitializeComboBox();
 			InitializeAnimalListView();
 			InitializeMenu();
@@ -28,6 +31,8 @@ namespace OOP
 			textBoxDepth.Visible = false;
 			textBoxName.Visible = false;
 			textBoxFlightSpeed.Visible = false;
+			textBoxManeSize.Visible = false;
+			textBoxMaxSpeed.Visible = false;	
 			comboBoxAnimalType.SelectedIndexChanged += comboBoxAnimalType_SelectedIndexChanged;
 			buttonDelete.Enabled = false;
 			buttonEdit.Enabled = false;
@@ -72,6 +77,25 @@ namespace OOP
 			fileMenu.DropDownItems.Add(saveMenu);
 			fileMenu.DropDownItems.Add(openMenu);
 			mainMenu.Items.Add(fileMenu);
+
+			ToolStripMenuItem pluginsMenu = new ToolStripMenuItem("Plugins");
+			foreach (var plugin in plugins)
+			{
+				ToolStripMenuItem pluginItem = new ToolStripMenuItem(plugin.Name)
+				{
+					CheckOnClick = true,
+					Checked = activePlugins[plugin.Name]
+				};
+
+				pluginItem.Click += (sender, e) =>
+				{
+					activePlugins[plugin.Name] = pluginItem.Checked;
+				};
+
+				pluginsMenu.DropDownItems.Add(pluginItem);
+			}
+
+			mainMenu.Items.Add(pluginsMenu);
 		}
 
 		private void SaveToFile(string format)
@@ -92,12 +116,17 @@ namespace OOP
 					var animals = animalList.GetAnimals();
 					if (!animals.Any())
 					{
-						MessageBox.Show("Animal list is empty!", "Warning",
-							MessageBoxButtons.OK, MessageBoxIcon.Warning);
-						return;
+						throw new Exception("Animal list is empty");
 					}
 
 					string data = serializers[format].Serialize(animals);
+
+					// Применяем активные плагины
+					foreach (var plugin in plugins.Where(p => activePlugins[p.Name]))
+					{
+						data = plugin.ProcessBeforeSave(data);
+					}
+
 					File.WriteAllText(saveFileDialog.FileName, data);
 
 					MessageBox.Show($"File saved successfully!\n{saveFileDialog.FileName}", "Success",
@@ -126,13 +155,18 @@ namespace OOP
 				try
 				{
 					string data = File.ReadAllText(openFileDialog.FileName);
+
+					// Применяем плагины в обратном порядке
+					foreach (var plugin in plugins.Where(p => activePlugins[p.Name]).Reverse())
+					{
+						data = plugin.ProcessAfterLoad(data);
+					}
+
 					var animals = serializers[format].Deserialize(data) ?? throw new Exception("No animals found in file");
 
 					if (!animals.Any())
 					{
-						MessageBox.Show("The file contains no animals!", "Warning",
-							MessageBoxButtons.OK, MessageBoxIcon.Warning);
-						return;
+						throw new Exception("File is incorrect");
 					}
 
 					if (animalList.Count > 0)
@@ -225,47 +259,64 @@ namespace OOP
 			string animalType = comboBoxAnimalType.SelectedItem?.ToString();
 			if (animalType == null) return;
 
+			// Сброс всех полей
+			ResetAllInputFields();
+
+			// Получаем тип через AnimalFactory
+			Type type = AnimalFactory.GetAnimalType(animalType);
+			if (type == null) return;
+
+			// Анализ параметров конструктора
+			AnalyzeConstructorParameters(type);
+		}
+
+		private void ResetAllInputFields()
+		{
 			textBoxBreed.Visible = false;
 			textBoxName.Visible = false;
 			textBoxDepth.Visible = false;
 			textBoxFlightSpeed.Visible = false;
+			textBoxMaxSpeed.Visible = false;
+			textBoxManeSize.Visible = false;
+		}
 
-			var assembly = Assembly.GetExecutingAssembly();
-			var allTypes = assembly.GetTypes();
-			var baseClassType = typeof(Animal);
+		private void AnalyzeConstructorParameters(Type type)
+		{
+			var constructor = type.GetConstructors()
+				.OrderByDescending(c => c.GetParameters().Length)
+				.FirstOrDefault();
 
-			foreach (var type in allTypes)
+			if (constructor == null) return;
+
+			foreach (var param in constructor.GetParameters().Skip(1))
 			{
-				if (type.IsClass && !type.IsAbstract && baseClassType.IsAssignableFrom(type) && type.Name == animalType)
-				{
-					var constructor = type.GetConstructors()
-						.OrderByDescending(c => c.GetParameters().Length)
-						.FirstOrDefault();
+				UpdateInputFieldVisibility(param);
+			}
+		}
 
-					if (constructor == null) break;
-
-					var parameters = constructor.GetParameters().Skip(1);
-
-					foreach (var param in parameters)
-					{
-						switch (param.Name.ToLower())
-						{
-							case "name":
-								textBoxName.Visible = true;
-								break;
-							case "breed":
-								textBoxBreed.Visible = true;
-								break;
-							case "depth":
-								textBoxDepth.Visible = true;
-								break;
-							case "flightspeed":
-								textBoxFlightSpeed.Visible = true;
-								break;
-						}
-					}
+		private void UpdateInputFieldVisibility(ParameterInfo param)
+		{
+			string paramName = param.Name.ToLower();
+			switch (paramName)
+			{
+				case "name":
+					textBoxName.Visible = true;
 					break;
-				}
+				case "breed":
+					textBoxBreed.Visible = true;
+					break;
+				case "depth":
+					textBoxDepth.Visible = true;
+					break;
+				case "flightspeed":
+					textBoxFlightSpeed.Visible = true;
+					break;
+				case "manesize":
+					textBoxManeSize.Visible = true;
+					break;
+				case "maxspeed":
+					textBoxMaxSpeed.Visible = true;
+					break;
 			}
 		}
 
@@ -280,71 +331,19 @@ namespace OOP
 				}
 
 				string imagePath = $"{animalType.ToLower()}.png";
-				var assembly = Assembly.GetExecutingAssembly();
-				var allTypes = assembly.GetTypes();
-				var baseClassType = typeof(Animal);
-
-				Type type = null;
-				foreach (var t in allTypes)
-				{
-					if (t.IsClass && !t.IsAbstract && baseClassType.IsAssignableFrom(t) && t.Name == animalType)
-					{
-						type = t;
-						break;
-					}
-				}
+				Type type = FindAnimalType(animalType);
 
 				if (type == null)
 				{
 					throw new Exception($"Unknown animal type: {animalType}");
 				}
+
 				var constructor = type.GetConstructors()
 					.OrderByDescending(c => c.GetParameters().Length)
-					.FirstOrDefault();
-
-				if (constructor == null)
-				{
-					throw new Exception($"No suitable constructor found for {animalType}");
-				}
+					.FirstOrDefault() ?? throw new Exception($"No constructor found for {animalType}");
 
 				var parameters = constructor.GetParameters();
-				var additionalParams = parameters.Skip(1).ToList();
-				object[] constructorParams = new object[additionalParams.Count + 1];
-				constructorParams[0] = imagePath;
-				for (int i = 0; i < additionalParams.Count; i++)
-				{
-					var param = additionalParams[i];
-					string paramName = param.Name.ToLower();
-					Control[] controls = this.Controls.Find($"textBox{paramName}", true);
-					if (controls.Length == 0 || !(controls[0] is TextBox textBox))
-					{
-						throw new Exception($"Input field for {param.Name} not found");
-					}
-					if (string.IsNullOrWhiteSpace(textBox.Text))
-					{
-						throw new Exception($"Field '{param.Name}' cannot be empty");
-					}
-
-					try
-					{
-						if (param.ParameterType == typeof(int))
-						{
-							if (!int.TryParse(textBox.Text, out int intValue))
-							{
-								throw new Exception($"Enter a valid {param.Name} (number)");
-							}
-							constructorParams[i + 1] = intValue;
-						}
-						else
-						{
-							constructorParams[i + 1] = Convert.ChangeType(textBox.Text, param.ParameterType);
-						}
-					}
-					catch (Exception ex)
-					{
-						throw new Exception($"Invalid value for {param.Name}: {ex.Message}");
-					}
-				}
+				object[] constructorParams = PrepareConstructorParameters(imagePath, parameters);
 
 				Animal animal = (Animal)constructor.Invoke(constructorParams);
 				history.Execute(new HistoryAdd(animalList, animal));
@@ -356,8 +355,36 @@ namespace OOP
 			}
 			catch (Exception ex)
 			{
-				MessageBox.Show($"{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
+		}
+
+		private Type FindAnimalType(string animalType)
+		{
+			return AnimalFactory.GetAnimalType(animalType);
+		}
+
+		private object[] PrepareConstructorParameters(string imagePath, ParameterInfo[] parameters)
+		{
+			var additionalParams = parameters.Skip(1).ToList();
+			object[] constructorParams = new object[additionalParams.Count + 1];
+			constructorParams[0] = imagePath;
+
+			for (int i = 0; i < additionalParams.Count; i++)
+			{
+				var param = additionalParams[i];
+				string paramName = param.Name.ToLower();
+				Control[] controls = this.Controls.Find($"textBox{paramName}", true);
+
+				if (controls.Length == 0 || !(controls[0] is TextBox textBox))
+					throw new Exception($"Input field for {param.Name} not found");
+
+				if (string.IsNullOrWhiteSpace(textBox.Text))
+					throw new Exception($"Field '{param.Name}' cannot be empty");
+
+				constructorParams[i + 1] = Convert.ChangeType(textBox.Text, param.ParameterType);
+			}
+			return constructorParams;
 		}
 
 		private void ClearInputFields()
@@ -553,6 +580,60 @@ namespace OOP
 		private void UpdateAnimalCount()
 		{
 			labelAnimalCount.Text = $"Total animals created: {animalList.Count}";
+		}
+
+		private void buttonLoadDll_Click(object sender, EventArgs e)
+		{
+			using (OpenFileDialog openFileDialog = new OpenFileDialog())
+			{
+				openFileDialog.Filter = "DLL files (*.dll)|*.dll";
+				openFileDialog.Title = "Select animal DLL";
+				openFileDialog.InitialDirectory = AppDomain.CurrentDomain.BaseDirectory;
+
+				if (openFileDialog.ShowDialog() == DialogResult.OK)
+				{
+					try
+					{
+						AnimalFactory.LoadAssembly(Assembly.LoadFrom(openFileDialog.FileName));
+						UpdateAnimalComboBox();
+						MessageBox.Show("DLL loaded successfully!", "Success",
+							MessageBoxButtons.OK, MessageBoxIcon.Information);
+					}
+					catch (Exception ex)
+					{
+						MessageBox.Show($"Error loading DLL: {ex.Message}", "Error",
+							MessageBoxButtons.OK, MessageBoxIcon.Error);
+					}
+				}
+			}
+		}
+
+		private void UpdateAnimalComboBox()
+		{
+			comboBoxAnimalType.DataSource = null;
+			comboBoxAnimalType.DataSource = AnimalFactory.GetAvailableAnimalTypes().ToList();
+		}
+
+		
+		private void LoadPlugins()
+		{
+			plugins = PluginLoader.LoadPlugins().ToList();
+
+			// Отладочный вывод
+			Console.WriteLine($"Loaded {plugins.Count} plugins:");
+			foreach (var plugin in plugins)
+			{
+				Console.WriteLine($"- {plugin.Name}");
+				activePlugins[plugin.Name] = false;
+			}
+
+			if (plugins.Count == 0)
+			{
+				MessageBox.Show("No plugins were loaded. Check Plugins directory.",
+							  "Plugin Warning",
+							  MessageBoxButtons.OK,
+							  MessageBoxIcon.Warning);
+			}
 		}
 	}
 

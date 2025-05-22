@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35806.99 d17.13
+VisualStudioVersion = 17.13.35806.99
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OOP", "OOP\OOP.csproj", "{E3BCBC92-EB40-4012-8975-E4935AD5A762}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnimalExtensions", "AnimalExtensions\AnimalExtensions.csproj", "{2B96F44B-B3AA-4389-9924-BDE0CDB9F45B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChecksumPlugin", "ChecksumPlugin\ChecksumPlugin.csproj", "{A955F2FD-0543-40B0-A62C-D959F3322B32}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{E3BCBC92-EB40-4012-8975-E4935AD5A762}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E3BCBC92-EB40-4012-8975-E4935AD5A762}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E3BCBC92-EB40-4012-8975-E4935AD5A762}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B96F44B-B3AA-4389-9924-BDE0CDB9F45B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B96F44B-B3AA-4389-9924-BDE0CDB9F45B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B96F44B-B3AA-4389-9924-BDE0CDB9F45B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B96F44B-B3AA-4389-9924-BDE0CDB9F45B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A955F2FD-0543-40B0-A62C-D959F3322B32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A955F2FD-0543-40B0-A62C-D959F3322B32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A955F2FD-0543-40B0-A62C-D959F3322B32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A955F2FD-0543-40B0-A62C-D959F3322B32}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

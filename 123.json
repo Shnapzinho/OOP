@@ -1,0 +1,10 @@
+[
+  {
+    "TypeName": "Lion",
+    "ManeSize": 31,
+    "MaxSpeed": 22,
+    "ImagePath": "lion.png",
+    "Type": "Mammal",
+    "Species": "Lion"
+  }
+]

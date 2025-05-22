@@ -50,6 +50,9 @@ namespace OOP
 			buttonUndo = new Button();
 			openFileDialog = new OpenFileDialog();
 			saveFileDialog = new SaveFileDialog();
+			textBoxMaxSpeed = new TextBox();
+			textBoxManeSize = new TextBox();
+			buttonLoadDll = new Button();
 			((System.ComponentModel.ISupportInitialize)pictureBoxAnimal).BeginInit();
 			SuspendLayout();
 			// 
@@ -136,7 +139,7 @@ namespace OOP
 			// 
 			// textBoxFlightSpeed
 			// 
-			textBoxFlightSpeed.Location = new Point(13, 97);
+			textBoxFlightSpeed.Location = new Point(13, 96);
 			textBoxFlightSpeed.Name = "textBoxFlightSpeed";
 			textBoxFlightSpeed.PlaceholderText = "Enter flight speed";
 			textBoxFlightSpeed.Size = new Size(244, 31);
@@ -195,11 +198,38 @@ namespace OOP
 			// 
 			openFileDialog.FileName = "openFileDialog1";
 			// 
+			// textBoxMaxSpeed
+			// 
+			textBoxMaxSpeed.Location = new Point(13, 142);
+			textBoxMaxSpeed.Name = "textBoxMaxSpeed";
+			textBoxMaxSpeed.PlaceholderText = "Enter max speed";
+			textBoxMaxSpeed.Size = new Size(244, 31);
+			textBoxMaxSpeed.TabIndex = 19;
+			// 
+			// textBoxManeSize
+			// 
+			textBoxManeSize.Location = new Point(13, 96);
+			textBoxManeSize.Name = "textBoxManeSize";
+			textBoxManeSize.PlaceholderText = "Enter mane size";
+			textBoxManeSize.Size = new Size(244, 31);
+			textBoxManeSize.TabIndex = 20;
+			// 
+			// buttonLoadDll
+			// 
+			buttonLoadDll.Location = new Point(487, 98);
+			buttonLoadDll.Name = "buttonLoadDll";
+			buttonLoadDll.Size = new Size(75, 34);
+			buttonLoadDll.TabIndex = 21;
+			buttonLoadDll.Text = "Load Animal DLL";
+			buttonLoadDll.Click += buttonLoadDll_Click;
+			// 
 			// Form1
 			// 
 			AutoScaleDimensions = new SizeF(10F, 25F);
 			AutoScaleMode = AutoScaleMode.Font;
 			ClientSize = new Size(865, 630);
+			Controls.Add(textBoxManeSize);
+			Controls.Add(textBoxMaxSpeed);
 			Controls.Add(buttonUndo);
 			Controls.Add(buttonRedo);
 			Controls.Add(buttonEdit);
@@ -215,6 +245,7 @@ namespace OOP
 			Controls.Add(pictureBoxAnimal);
 			Controls.Add(textBoxName);
 			Controls.Add(buttonCreate);
+			Controls.Add(buttonLoadDll);
 			Name = "Form1";
 			Text = "Form1";
 			((System.ComponentModel.ISupportInitialize)pictureBoxAnimal).EndInit();
@@ -223,7 +254,7 @@ namespace OOP
 		}
 
 		#endregion
-
+		private Button buttonLoadDll;
 		private Button buttonCreate;
 		private TextBox textBoxName;
 		private PictureBox pictureBoxAnimal;
@@ -241,5 +272,7 @@ namespace OOP
 		private Button buttonUndo;
 		private OpenFileDialog openFileDialog;
 		private SaveFileDialog saveFileDialog;
+		private TextBox textBoxMaxSpeed;
+		private TextBox textBoxManeSize;
 	}
 }

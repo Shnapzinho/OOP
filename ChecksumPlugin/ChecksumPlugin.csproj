@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OOP\OOP.csproj" />
+  </ItemGroup>
+
+	<Target Name="CopyDLLToOOP" AfterTargets="Build">
+		<PropertyGroup>
+			<OOPOutputPath>$(SolutionDir)OOP\bin\$(Configuration)\net8.0-windows\Plugins</OOPOutputPath>
+		</PropertyGroup>
+
+		<MakeDir Directories="$(OOPOutputPath)" />
+
+		<Copy
+		  SourceFiles="$(OutputPath)ChecksumPlugin.dll"
+		  DestinationFolder="$(OOPOutputPath)"
+  />
+	</Target>
+
+</Project>

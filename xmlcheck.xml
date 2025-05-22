@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-16"?>
+<AnimalListWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Animals>
+    <Animal xsi:type="Carp">
+      <ImagePath>carp.png</ImagePath>
+      <Type>Fish</Type>
+      <Species>Carp</Species>
+      <Depth>12</Depth>
+    </Animal>
+    <Animal xsi:type="Eagle">
+      <ImagePath>eagle.png</ImagePath>
+      <Type>Bird</Type>
+      <Species>Eagle</Speces>
+      <FlightSpeed>22</FlightSpeed>
+    </Animal>
+  </Animals>
+</AnimalListWrapper>
+<!-- CHECKSUM:24e6c48a6e8365ecc5c9d87c709b9f38fc4988ed42b58da4c128f6161ab7f2d4 -->

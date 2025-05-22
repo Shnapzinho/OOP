@@ -1,70 +1,67 @@
-﻿// AnimalFactory.cs
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.IO;
 
 namespace OOP
 {
 	public static class AnimalFactory
 	{
-		private static Dictionary<string, Type> AnimalTypes;
+		private static Dictionary<string, Type> _animalTypes = new Dictionary<string, Type>();
+		private static List<Assembly> _loadedAssemblies = new List<Assembly>();
 
 		static AnimalFactory()
 		{
-			AnimalTypes = new Dictionary<string, Type>();
-			LoadAnimalTypes(Assembly.GetExecutingAssembly());
+			LoadAssembly(Assembly.GetExecutingAssembly());
+		}
 
-			// Загрузка дополнительных сборок из папки Extensions
-			string extensionsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Extensions");
-			if (Directory.Exists(extensionsPath))
+		public static void LoadAssembly(Assembly assembly)
+		{
+			if (_loadedAssemblies.Contains(assembly)) return;
+
+			_loadedAssemblies.Add(assembly);
+			UpdateAnimalTypes(assembly);
+		}
+
+		private static void UpdateAnimalTypes(Assembly assembly)
+		{
+			foreach (var type in assembly.GetTypes()
+				.Where(t => t.IsClass &&
+						   !t.IsAbstract &&
+						   typeof(Animal).IsAssignableFrom(t)))
 			{
-				foreach (string dll in Directory.GetFiles(extensionsPath, "*.dll"))
+				if (!_animalTypes.ContainsKey(type.Name))
 				{
-					try
-					{
-						Assembly assembly = Assembly.LoadFrom(dll);
-						LoadAnimalTypes(assembly);
-					}
-					catch (Exception ex)
-					{
-						Console.WriteLine($"Error loading assembly {dll}: {ex.Message}");
-					}
+					_animalTypes[type.Name] = type;
 				}
 			}
 		}
 
-		private static void LoadAnimalTypes(Assembly assembly)
+		public static Type GetAnimalType(string animalType)
 		{
-			var animalType = typeof(Animal);
-
-			foreach (var type in assembly.GetTypes())
-			{
-				if (type.IsClass && !type.IsAbstract && animalType.IsAssignableFrom(type))
-				{
-					AnimalTypes[type.Name] = type;
-				}
-			}
+			return _animalTypes.TryGetValue(animalType, out Type type) ? type : null;
 		}
 
 		public static IEnumerable<string> GetAvailableAnimalTypes()
 		{
-			return AnimalTypes.Keys.OrderBy(x => x);
+			return _animalTypes.Keys.OrderBy(x => x);
 		}
 
-		// Остальной код остается без изменений
 		public static Animal CreateAnimal(string animalType, string imagePath, params object[] additionalParameters)
 		{
-			if (AnimalTypes.TryGetValue(animalType, out Type type))
+			if (_animalTypes.TryGetValue(animalType, out Type type))
 			{
 				var parameters = new List<object> { imagePath };
-				if (additionalParameters != null)
-				{
-					parameters.AddRange(additionalParameters);
-				}
+				parameters.AddRange(additionalParameters ?? Array.Empty<object>());
 
-				return (Animal)Activator.CreateInstance(type, parameters.ToArray());
+				try
+				{
+					return (Animal)Activator.CreateInstance(type, parameters.ToArray());
+				}
+				catch (Exception ex)
+				{
+					throw new ArgumentException($"Failed to create {animalType}: {ex.Message}");
+				}
 			}
 			throw new ArgumentException($"Unknown animal type: {animalType}");
 		}
