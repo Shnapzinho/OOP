@@ -160,6 +160,12 @@ namespace OOP
 					foreach (var plugin in plugins.Where(p => activePlugins[p.Name]).Reverse())
 					{
 						data = plugin.ProcessAfterLoad(data);
+						if (data == null) // Если плагин вернул null (ошибка контрольной суммы)
+						{
+							MessageBox.Show("File loading was aborted due to checksum validation failure.",
+										  "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+							return; // Прерываем загрузку
+						}
 					}
 
 					var animals = serializers[format].Deserialize(data) ?? throw new Exception("No animals found in file");

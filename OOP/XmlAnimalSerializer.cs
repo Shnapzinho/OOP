@@ -20,6 +20,7 @@ namespace OOP
 			try
 			{
 				var wrapper = new AnimalListWrapper { Animals = animals };
+				// Передаем актуальные типы каждый раз при сериализации
 				var serializer = new XmlSerializer(typeof(AnimalListWrapper), GetAnimalTypes());
 				using var writer = new StringWriter();
 				serializer.Serialize(writer, wrapper);
@@ -37,6 +38,7 @@ namespace OOP
 		{
 			try
 			{
+				// Передаем актуальные типы каждый раз при десериализации
 				var serializer = new XmlSerializer(typeof(AnimalListWrapper), GetAnimalTypes());
 				using var reader = new StringReader(data);
 				var wrapper = (AnimalListWrapper)serializer.Deserialize(reader);
@@ -50,39 +52,17 @@ namespace OOP
 			}
 		}
 
+		// Этот метод должен быть публичным, чтобы AnimalFactory мог передавать типы
+		// Или же AnimalFactory должен иметь способ получать все загруженные сборки,
+		// что уже реализовано внутренне в AnimalFactory.GetAvailableAnimalTypes()
 		private Type[] GetAnimalTypes()
 		{
-			var animalTypes = new List<Type>();
-
-			// Загрузка типов из основной сборки
-			animalTypes.AddRange(
-				Assembly.GetExecutingAssembly()
-					.GetTypes()
-					.Where(t => t.IsClass && !t.IsAbstract && typeof(Animal).IsAssignableFrom(t))
-			);
-
-			// Загрузка типов из дополнительных сборок в папке Extensions
-			string extensionsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Extensions");
-			if (Directory.Exists(extensionsPath))
-			{
-				foreach (string dll in Directory.GetFiles(extensionsPath, "*.dll"))
-				{
-					try
-					{
-						Assembly assembly = Assembly.LoadFrom(dll);
-						animalTypes.AddRange(
-							assembly.GetTypes()
-								.Where(t => t.IsClass && !t.IsAbstract && typeof(Animal).IsAssignableFrom(t))
-						);
-					}
-					catch
-					{
-					
-					}
-				}
-			}
-
-			return animalTypes.ToArray();
+			// Вместо того чтобы самому сканировать сборки, AnimalFactory уже знает обо всех загруженных типах.
+			// Используем его для получения всех известных типов Animal.
+			return AnimalFactory.GetAvailableAnimalTypes()
+								.Select(typeName => AnimalFactory.GetAnimalType(typeName))
+								.Where(type => type != null)
+								.ToArray();
 		}
 
 		// Метод для проверки доступных типов (может быть полезен для отладки)

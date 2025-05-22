@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-16"?>
+<AnimalListWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Animals>
+    <Animal xsi:type="Lion">
+      <ImagePath>lion.png</ImagePath>
+      <Type>Mammal</Type>
+      <Species>Lion</Species>
+      <ManeSize>31</ManeSize>
+      <MaxSpeed>22</MaxSpeed>
+    </Animal>
+  </Animals>
+</AnimalListWrapper>
+<!-- CHECKSUM:552ecb158d96f44b374ed9f9565b6db182a0f3d62bc00cdcc47910c7516e9243 -->

@@ -19,29 +19,44 @@ namespace ChecksumPlugin
 
 		public string ProcessAfterLoad(string data)
 		{
-			string? originalData = null;
 			try
 			{
 				int checksumIndex = data.LastIndexOf("\n<!-- CHECKSUM:");
-				if (checksumIndex == -1) return data;
+				if (checksumIndex == -1)
+				{
+					// Если плагин включен, но контрольной суммы нет - ошибка
+					throw new Exception("Checksum not found. The file was saved without checksum validation.");
+				}
 
-				originalData = data.Substring(0, checksumIndex);
-				string storedChecksum = data.Substring(checksumIndex + 15, 64);
+				string originalData = data.Substring(0, checksumIndex);
+				string checksumPart = data.Substring(checksumIndex + 15); // Пропускаем "\n<!-- CHECKSUM:"
 
+				// Извлекаем только хеш (первые 64 символа)
+				if (checksumPart.Length < 64)
+				{
+					throw new Exception("Invalid checksum format.");
+				}
+
+				string storedChecksum = checksumPart.Substring(0, 64);
 				using var sha256 = SHA256.Create();
 				byte[] currentHashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(originalData));
 				string currentHashString = BitConverter.ToString(currentHashBytes).Replace("-", "").ToLower();
 
 				if (currentHashString != storedChecksum)
 				{
-					throw new Exception("Data checksum verification failed! The file may have been uncorrect.");
+					throw new Exception("Checksum verification failed! The file may have been corrupted.");
 				}
+
+				return originalData;
 			}
-			catch (Exception ex) {
-				MessageBox.Show($"Warning: {ex.Message}",
-						"Checksum Mismatch", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+			catch (Exception ex)
+			{
+				MessageBox.Show($"Error: {ex.Message}\n\nData loading aborted.",
+							  "Checksum Validation Failed",
+							  MessageBoxButtons.OK,
+							  MessageBoxIcon.Error);
+				return null;
 			}
-			return originalData;
 		}
 	}
 }
