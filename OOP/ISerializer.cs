@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace OOP
+﻿namespace OOP
 {
 	public interface ISerializer
 	{

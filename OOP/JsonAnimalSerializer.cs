@@ -5,54 +5,17 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Windows.Forms; // Add this using directive for MessageBox and Application
 
 namespace OOP
 {
 	public class JsonAnimalSerializer : ISerializer
 	{
-		private static readonly Dictionary<string, Type> AnimalTypes;
+		private readonly Form1 _mainForm;
 
-		static JsonAnimalSerializer()
+		public JsonAnimalSerializer(Form1 mainForm)
 		{
-			AnimalTypes = LoadAnimalTypes();
-		}
-
-		private static Dictionary<string, Type> LoadAnimalTypes()
-		{
-			var types = new Dictionary<string, Type>();
-			var animalType = typeof(Animal);
-
-			// Загрузка из текущей сборки
-			foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
-			{
-				if (type.IsClass && !type.IsAbstract && animalType.IsAssignableFrom(type))
-				{
-					types.Add(type.Name, type);
-				}
-			}
-
-			// Загрузка из дополнительных сборок
-			string extensionsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Extensions");
-			if (Directory.Exists(extensionsPath))
-			{
-				foreach (string dll in Directory.GetFiles(extensionsPath, "*.dll"))
-				{
-					try
-					{
-						Assembly assembly = Assembly.LoadFrom(dll);
-						foreach (var type in assembly.GetTypes())
-						{
-							if (type.IsClass && !type.IsAbstract && animalType.IsAssignableFrom(type))
-							{
-								types.Add(type.Name, type);
-							}
-						}
-					}
-					catch { /* Игнорируем ошибки */ }
-				}
-			}
-
-			return types;
+			_mainForm = mainForm;
 		}
 
 		public string Serialize(List<Animal> animals)
@@ -67,15 +30,53 @@ namespace OOP
 
 		public List<Animal> Deserialize(string data)
 		{
-			var options = new JsonSerializerOptions
+			try
 			{
-				Converters = { new AnimalConverter() }
-			};
-			return JsonSerializer.Deserialize<List<Animal>>(data, options) ?? new List<Animal>();
+				// Проверяем наличие контрольной суммы
+				if (data.Contains("\"Checksum\":"))
+				{
+					bool checksumPluginActive = false;
+
+					// Проверяем, активен ли плагин Checksum в главной форме
+					var mainForm = Application.OpenForms.OfType<Form1>().FirstOrDefault();
+					if (mainForm != null)
+					{
+						checksumPluginActive = mainForm.IsPluginActive("Checksum Validator");
+					}
+
+					if (!checksumPluginActive)
+					{
+						MessageBox.Show("This file contains checksum protection. Please enable the Checksum Validator plugin to load it.",
+							"Checksum Protection", MessageBoxButtons.OK, MessageBoxIcon.Error);
+						return new List<Animal>();
+					}
+				}
+
+				var options = new JsonSerializerOptions
+				{
+					Converters = { new AnimalConverter() }
+				};
+				return JsonSerializer.Deserialize<List<Animal>>(data, options) ?? new List<Animal>();
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show($"JSON Deserialization Error: {ex.Message}\n\nIs the file corrupted?",
+					"Deserialization Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return new List<Animal>();
+			}
 		}
 
 		private class AnimalConverter : JsonConverter<Animal>
 		{
+			// Instead of a static dictionary, we'll get types from AnimalFactory dynamically
+			private Dictionary<string, Type> GetAnimalTypes()
+			{
+				return AnimalFactory.GetAvailableAnimalTypes()
+									.Select(typeName => AnimalFactory.GetAnimalType(typeName))
+									.Where(type => type != null)
+									.ToDictionary(type => type.Name, type => type);
+			}
+
 			public override bool CanConvert(Type typeToConvert)
 			{
 				return typeof(Animal).IsAssignableFrom(typeToConvert);
@@ -90,7 +91,8 @@ namespace OOP
 					throw new JsonException("TypeName property is missing");
 
 				string typeName = typeNameElement.GetString();
-				if (!AnimalTypes.TryGetValue(typeName, out Type animalType))
+				// Get AnimalTypes dynamically for each Read operation
+				if (!GetAnimalTypes().TryGetValue(typeName, out Type animalType))
 					throw new JsonException($"Unknown animal type: {typeName}");
 
 				var animal = (Animal)Activator.CreateInstance(animalType);

@@ -10,6 +10,12 @@ namespace OOP
 {
 	public class XmlAnimalSerializer : ISerializer
 	{
+		private readonly Form1 _mainForm;
+
+		public XmlAnimalSerializer(Form1 mainForm)
+		{
+			_mainForm = mainForm;
+		}
 		public class AnimalListWrapper
 		{
 			public List<Animal> Animals { get; set; } = new List<Animal>();
@@ -38,7 +44,26 @@ namespace OOP
 		{
 			try
 			{
-				// Передаем актуальные типы каждый раз при десериализации
+				// Проверяем наличие контрольной суммы
+				if (data.Contains("<!-- CHECKSUM:"))
+				{
+					bool checksumPluginActive = false;
+
+					// Проверяем, активен ли плагин Checksum в главной форме
+					var mainForm = Application.OpenForms.OfType<Form1>().FirstOrDefault();
+					if (mainForm != null)
+					{
+						checksumPluginActive = mainForm.IsPluginActive("Checksum Validator");
+					}
+
+					if (!checksumPluginActive)
+					{
+						MessageBox.Show("This file contains checksum protection. Please enable the Checksum Validator plugin to load it.",
+							"Checksum Protection", MessageBoxButtons.OK, MessageBoxIcon.Error);
+						return new List<Animal>();
+					}
+				}
+
 				var serializer = new XmlSerializer(typeof(AnimalListWrapper), GetAnimalTypes());
 				using var reader = new StringReader(data);
 				var wrapper = (AnimalListWrapper)serializer.Deserialize(reader);
@@ -63,14 +88,6 @@ namespace OOP
 								.Select(typeName => AnimalFactory.GetAnimalType(typeName))
 								.Where(type => type != null)
 								.ToArray();
-		}
-
-		// Метод для проверки доступных типов (может быть полезен для отладки)
-		public static IEnumerable<string> GetAvailableAnimalTypeNames()
-		{
-			return new XmlAnimalSerializer().GetAnimalTypes()
-				.Select(t => t.Name)
-				.OrderBy(name => name);
 		}
 	}
 }

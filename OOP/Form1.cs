@@ -43,9 +43,9 @@ namespace OOP
 		{
 			serializers = new Dictionary<string, ISerializer>
 	{
-		{ "JSON", new JsonAnimalSerializer() },
-		{ "XML", new XmlAnimalSerializer() } 
-    };
+		{ "JSON", new JsonAnimalSerializer(this) },
+		{ "XML", new XmlAnimalSerializer(this) }
+	};
 		}
 
 		private void InitializeMenu()
@@ -138,6 +138,11 @@ namespace OOP
 						MessageBoxButtons.OK, MessageBoxIcon.Error);
 				}
 			}
+		}
+
+		public bool IsPluginActive(string pluginName)
+		{
+			return activePlugins.TryGetValue(pluginName, out bool isActive) && isActive;
 		}
 
 		private void OpenFromFile(string format)
